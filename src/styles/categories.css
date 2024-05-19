@@ -1,0 +1,53 @@
+.cat-box {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgb(255, 255, 255);
+  margin: 10px;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer; 
+  text-align: left;
+  outline: none;
+  width: 250px;
+}
+
+.cat-box:hover {
+  background-color: rgba(4, 0, 255, 0.7);
+  color: white;
+}
+
+.cat-box:hover .cat-name,
+.cat-box:hover .cat-stock {
+  color: white;
+}
+
+.icon {
+  width: 60px; 
+  height: 60px;
+  border-radius: 10%;
+  margin-right: 10px;
+}
+
+.categories-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.category-item {
+  font-size: 20px;
+  flex: 1 0 21%; 
+  margin: 10px;
+  box-sizing: border-box;
+}
+
+.cat-name {
+  margin-bottom: 5px;
+}
+
+.cat-stock {
+  color: gray;
+}
