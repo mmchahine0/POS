@@ -28,22 +28,20 @@ const Invoice = ({ selectedProducts }) => {
             <div className="payment-summary">
                 <h3>Payment Summary</h3>
                 <div className="payment-summary-item">
-                    <p>Subtotal</p>
-                    <p>${calculateTotal()}</p>
+                    <p>Sub Total</p>
+                    <p style={{color:"black"}}>${calculateTotal()}</p>
                 </div>
                 <div className="payment-summary-item">
                     <p>Tax</p>
-                    <p>${(calculateTotal() * 0.1).toFixed(2)}</p>
+                    <p style={{color:"black"}}>${(calculateTotal() * 0.1).toFixed(2)}</p>
                 </div>
                 <hr />
                 <div className="payment-summary-item">
 
-                    <p>Total</p>
-                    <p>${(calculateTotal() * 1.1).toFixed(2)}</p>
+                    <p>Total Payment</p>
+                    <p style={{color:"black"}}>${(calculateTotal() * 1.1).toFixed(2)}</p>
                 </div>
-            </div>
-    </div>
-        <div className="payment-method">
+                <div className="payment-method">
             <div className="payment-method-options">
             <div className="payment-method-option">
                 <input type="radio" id="cash" name="payment" value="cash" />
@@ -56,8 +54,8 @@ const Invoice = ({ selectedProducts }) => {
             </div>
             <button className="payment-button">Pay</button>
         </div>
-
-
+            </div>
+    </div>
     </div>
 
   );

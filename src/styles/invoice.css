@@ -2,11 +2,16 @@
     display: flex;
     justify-content: space-between;
     background-color: white;
-    width: 300px;
+    width: 400px;
     flex-shrink: 0; 
     padding-left: 10px;
     transition: width 0.3s ease;
     margin-left: 20px;
+    border-radius: 5px;
+    margin-top: 100px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+
 }
 
 .invoice-products-container{
@@ -26,7 +31,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     align-items: center;
     border-radius: 3px;
-    width: 250px;
+    width: 350px;
     
 }
 
@@ -47,17 +52,17 @@
     display: flex;
     justify-content: space-between;
     padding: 10px;
-    border-top: 1px solid #ccc;
     flex-direction: column;
 }
 
 .payment-summary{
-    padding: 10px;
+    padding: 20px;
     margin-top: 20px;
     display: flex;
     gap: 10px;
     flex-direction: column;
-    background-color: #eee;
+    background-color: #eeeeee;
+    border-radius: 5px;
 }
 
 .payment-summary-item{
@@ -66,4 +71,7 @@
     height: 30px;
     gap: 10px;
     padding: 5px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: gray;
 }

@@ -152,7 +152,7 @@ const getProducts = (category_id) => {
         setTimeout(() => {
             const filteredProducts = allProducts.filter((product) => product.category_id === category_id);
             resolve(filteredProducts);
-        }, 10); 
+        }, 10);
     });
 };
 

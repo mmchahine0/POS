@@ -6,6 +6,10 @@
   gap: 10px;
   transition: flex-basis 0.3s ease;
   box-sizing: border-box;
+  padding-left: 60px;
+  padding-right: 60px;
+  margin-top: 80px;
+  max-height: 25vh;
 }
 
 .cat-box {
@@ -22,18 +26,20 @@
   outline: none;
   width: 100%;
   box-sizing: border-box; 
+  border: 5px white;
 }
 
-.cat-box:hover {
+.cat-box:hover, .cat-box.selected {
   background-color: rgba(4, 0, 255, 0.7);
   color: white;
 }
 
 .cat-box:hover .cat-name,
-.cat-box:hover .cat-stock {
+.cat-box:hover .cat-stock,
+.cat-box.selected .cat-name,
+.cat-box.selected .cat-stock {
   color: white;
 }
-
 .icon {
   width: 60px; 
   height: 60px;
@@ -47,13 +53,16 @@
   align-items: center;
 }
 
-.cat-name {
-  margin-bottom: 5px;
-}
-
-.cat-stock {
+.cat-stock{
   color: gray;
 }
+
+.cat-name {
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
 
 .categories-products-container {
   display: flex;

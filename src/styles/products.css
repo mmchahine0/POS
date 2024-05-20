@@ -2,6 +2,8 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     list-style: none;
+    padding-left: 50px;
+    padding-right: 50px;
 
 }
   
@@ -10,7 +12,9 @@
     flex-direction: column;
     gap: 20px;
     padding: 10px;
-    border-radius: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    background-color: #ffffff;
   }
 
 .main{
