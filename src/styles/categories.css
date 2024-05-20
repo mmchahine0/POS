@@ -9,7 +9,7 @@
 }
 
 .cat-box {
-  padding: 10px;
+  padding: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -55,6 +55,9 @@
   color: gray;
 }
 
-.categories-products-container{
-  width: 95%;
+.categories-products-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  transition: flex-grow 0.3s ease;
 }

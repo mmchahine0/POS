@@ -5,6 +5,10 @@ import { Product } from '../components/Product';
 import { useState, useEffect } from 'react';
 import Invoice from '../components/Invoice';
 import { addToInvoice, removeFromInvoice } from '../utils/invoiceUtils';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import 'swiper/css/navigation';
+import 'swiper/css';
 import '../styles/menu.css';
 
 
@@ -17,13 +21,19 @@ const Menu = () => {
   useEffect(() => {
     setLoading(true);
     getProducts(category).then((newProducts) => {
-      setProducts(newProducts);
-      setLoading(false);
+      const paginated = [];
+        for (let i = 0; i < newProducts.length; i += 9) {
+          paginated.push(newProducts.slice(i, i + 9));
+        }
+        setProducts(paginated);
+        setLoading(false);
     }).catch((error) => {
       console.error("Error fetching products:", error);
       setLoading(false);
     });
-  }, [category]);
+}, [category]);
+
+
 
   const handleAddToInvoice = (product) => {
     setSelectedProducts((prevSelectedProducts) => 
@@ -47,28 +57,47 @@ const Menu = () => {
           </div>
         ))}
         </div>
+        <h1>Menu</h1>
         {loading ? (
             <div className="products-container">
+              
             </div>
           ) : (
-            <div className="products-container">
-              {products.length === 0 ? (
-                <div>No products available.</div>
-              ) : (
-                products.map((product) => {
-                  const selectedProduct = selectedProducts.find(p => p.id === product.id);
-                  const quantity = selectedProduct ? selectedProduct.quantity : 0;
-                  return (
-                    <Product 
-                      key={product.id} 
-                      product={product} 
-                      quantity={quantity}
-                      addToInvoice={() => handleAddToInvoice(product)}
-                      removeFromInvoice={() => handleRemoveFromInvoice(product)}
-                    />
-                  );
-                })
-              )}
+            <div>
+              {
+                (products.length == 0) ? (
+                  <div className="no-products">No products available</div>
+                ) : (
+                  <Swiper
+                  className="swiper-container" 
+                  modules={[Navigation, Pagination, Scrollbar, A11y]} 
+                  spaceBetween={50}
+                  navigation
+                  pagination={{ clickable: true }}
+                  scrollbar={{ draggable: true }}
+                  onSwiper={(swiper) => console.log(swiper)}
+                  onSlideChange={() => console.log('slide change')}
+                  >
+                  {products.map((productArray, index) => (
+                    <SwiperSlide className='swiper-slide' key={index} spaceBetween={50} slidesPerView={3}>
+                      <div className="products-container">
+                        {
+                          
+                        productArray.map((product) => (
+                          <Product 
+                            key={product.id}
+                            product={product} 
+                            quantity={selectedProducts.find((p) => p.id === product.id)?.quantity || 0} 
+                            addToInvoice={() => handleAddToInvoice(product)} 
+                            removeFromInvoice={() => handleRemoveFromInvoice(product)} 
+                          />
+                        ))}
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+                )
+              }
             </div>
           )}
 

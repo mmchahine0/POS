@@ -1,22 +1,17 @@
 .products-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 20px;
-    height: 60vh;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    list-style: none;
+
 }
   
-.product{
+.product {
     display: flex;
+    flex-direction: column;
     gap: 20px;
     padding: 10px;
-    background-color: #fff;
     border-radius: 10px;
-    height: 160px;
-    flex-direction: column;
-    justify-content: space-between  ;
-    flex-basis: calc(33.33% - 10px);
-}
+  }
 
 .main{
     display: flex;
@@ -105,3 +100,5 @@ img{
     font-weight: 300;
     color: #666;
 }
+
+

@@ -1,13 +1,22 @@
 .menu-container {
     display: flex;
-    width: 100%;
+    width:  100%;
     box-sizing: border-box;
     padding: 10px;
-    height: 90vh;
-    background-color: #eee;
 }
 .menu-items{
     margin-left: 100px;
     display: flex;
     flex-direction: column;
 }
+
+
+.swiper-container{
+    width: auto !important;
+}
+.swiper-slide{
+    width: 100% !important;
+}
+
+
+  

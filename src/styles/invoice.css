@@ -23,7 +23,6 @@
     display: flex;
     padding: 10px;
     gap: 10px;
-    /* Shaodw */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     align-items: center;
     border-radius: 3px;
