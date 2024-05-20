@@ -1,17 +1,27 @@
+.categories-container {
+  flex-grow: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  transition: flex-basis 0.3s ease;
+  box-sizing: border-box;
+}
+
 .cat-box {
-  padding: 10px;
+  padding: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   background-color: rgb(255, 255, 255);
-  margin: 10px;
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer; 
   text-align: left;
   outline: none;
-  width: 250px;
+  width: 100%;
+  box-sizing: border-box; 
 }
 
 .cat-box:hover {
@@ -31,17 +41,10 @@
   margin-right: 10px;
 }
 
-.categories-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
 .category-item {
-  font-size: 20px;
-  flex: 1 0 21%; 
-  margin: 10px;
-  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cat-name {
@@ -50,4 +53,11 @@
 
 .cat-stock {
   color: gray;
+}
+
+.categories-products-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  transition: flex-grow 0.3s ease;
 }
