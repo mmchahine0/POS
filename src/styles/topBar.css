@@ -37,6 +37,7 @@
 }
 
 .profile-container {
+  margin-right: 30px;
   display: flex;
   align-items: center;
 }

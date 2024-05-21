@@ -4,7 +4,7 @@ const allProducts = [
     {
         id: 1,
         name: "Burger",
-        description: "This is a burger This is a burger This is a burger This is a burger. This is a burger. ",
+        description: "This is a burger ",
         price: 10,
         img: "https://www.allrecipes.com/thmb/RTo6ddljby-5lAszPdMRwQ-aVh0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/19863best-burger-everFranceC4x3-c9c7d5cae40b4a58a110a33e04b531d1.jpg",
         category_id: 1
@@ -28,7 +28,7 @@ const allProducts = [
     {
         id: 11,
         name: "Burger",
-        description: "This is a burger This is a burger This is a burger This is a burger. This is a burger. ",
+        description: "This is a burger. ",
         price: 10,
         img: "https://www.allrecipes.com/thmb/RTo6ddljby-5lAszPdMRwQ-aVh0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/19863best-burger-everFranceC4x3-c9c7d5cae40b4a58a110a33e04b531d1.jpg",
         category_id: 1
@@ -52,7 +52,7 @@ const allProducts = [
     {
         id: 21,
         name: "Burger",
-        description: "This is a burger This is a burger This is a burger This is a burger. This is a burger. ",
+        description: "This is a burger",
         price: 10,
         img: "https://www.allrecipes.com/thmb/RTo6ddljby-5lAszPdMRwQ-aVh0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/19863best-burger-everFranceC4x3-c9c7d5cae40b4a58a110a33e04b531d1.jpg",
         category_id: 1
@@ -76,7 +76,7 @@ const allProducts = [
     {
         id: 31,
         name: "Burger",
-        description: "This is a burger This is a burger This is a burger This is a burger. This is a burger. ",
+        description: "This is a burger",
         price: 10,
         img: "https://www.allrecipes.com/thmb/RTo6ddljby-5lAszPdMRwQ-aVh0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/19863best-burger-everFranceC4x3-c9c7d5cae40b4a58a110a33e04b531d1.jpg",
         category_id: 1

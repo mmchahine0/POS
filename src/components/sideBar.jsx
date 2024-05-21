@@ -16,8 +16,12 @@ const Sidebar = () => {
     alert(`${alt} clicked`);
   };
 
-  const handleButtonClick = (button) => {
-    alert(`${button} clicked`);
+  const handleButtonClick = () => {
+    alert(`Button 2 clicked`);
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/login";
   };
 
   return (
@@ -39,13 +43,13 @@ const Sidebar = () => {
       <div className="sidebar-buttons">
         <button
           className="sidebar-button"
-          onClick={() => handleButtonClick("Button 1")}
+          onClick={() => handleLogout()}
         >
-          Button 1
+          Logout
         </button>
         <button
           className="sidebar-button"
-          onClick={() => handleButtonClick("Button 2")}
+          onClick={() => handleButtonClick()}
         >
           Button 2
         </button>

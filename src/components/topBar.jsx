@@ -2,6 +2,8 @@ import React from "react";
 import "../styles/topBar.css";
 
 const TopBar = ({ searchQuery, onSearchChange }) => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if(!user) window.location.href='/login';
   return (
     <div className="top-bar">
       <div className="search-container">
@@ -20,7 +22,7 @@ const TopBar = ({ searchQuery, onSearchChange }) => {
           className="profile-img"
         />
         <div className="profile-info">
-          <div className="profile-name">John Doe</div>
+          <div className="profile-name">{user.username}</div>
           <div className="profile-description">Admin</div>
         </div>
       </div>
