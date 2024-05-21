@@ -1,15 +1,15 @@
-import React from 'react';
-import '../styles/sideBar.css';
+import React from "react";
+import "../styles/sideBar.css";
 
 const Sidebar = () => {
-  const icon = 'path/to/icon.png';
+  const icon = "https://picsum.photos/200/202";
   const images = [
-    { src: 'path/to/image1.png', alt: 'Image 1' },
-    { src: 'path/to/image2.png', alt: 'Image 2' },
-    { src: 'path/to/image3.png', alt: 'Image 3' },
-    { src: 'path/to/image4.png', alt: 'Image 4' },
-    { src: 'path/to/image5.png', alt: 'Image 5' },
-    { src: 'path/to/image6.png', alt: 'Image 6' },
+    { src: "https://picsum.photos/200/200", alt: "Image 1" },
+    { src: "https://picsum.photos/200/200", alt: "Image 2" },
+    { src: "https://picsum.photos/200/200", alt: "Image 3" },
+    { src: "https://picsum.photos/200/200", alt: "Image 4" },
+    { src: "https://picsum.photos/200/200", alt: "Image 5" },
+    { src: "https://picsum.photos/200/200", alt: "Image 6" },
   ];
 
   const handleImageClick = (alt) => {
@@ -37,8 +37,18 @@ const Sidebar = () => {
         ))}
       </div>
       <div className="sidebar-buttons">
-        <button className="sidebar-button" onClick={() => handleButtonClick('Button 1')}>Button 1</button>
-        <button className="sidebar-button" onClick={() => handleButtonClick('Button 2')}>Button 2</button>
+        <button
+          className="sidebar-button"
+          onClick={() => handleButtonClick("Button 1")}
+        >
+          Button 1
+        </button>
+        <button
+          className="sidebar-button"
+          onClick={() => handleButtonClick("Button 2")}
+        >
+          Button 2
+        </button>
       </div>
     </div>
   );
