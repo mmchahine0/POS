@@ -65,7 +65,7 @@ const Menu = () => {
           ) : (
             <div>
               {
-                (products.length == 0) ? (
+                (products.length === 0) ? (
                   <div className="no-products">No products available</div>
                 ) : (
                   <Swiper
@@ -79,7 +79,7 @@ const Menu = () => {
                   onSlideChange={() => console.log('slide change')}
                   >
                   {products.map((productArray, index) => (
-                    <SwiperSlide className='swiper-slide' key={index} spaceBetween={50} slidesPerView={3}>
+                    <SwiperSlide className='swiper-slide' key={index}>
                       <div className="products-container">
                         {
                           
