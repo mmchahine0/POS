@@ -2,7 +2,8 @@
     display: flex;
     width:  100%;
     box-sizing: border-box;
-    padding: 10px;
+    background-color: rgb(221, 221, 221);
+    min-height: 100vh;
 }
 .menu-items{
     margin-left: 100px;
@@ -19,4 +20,5 @@
 }
 
 
+  
   
