@@ -4,7 +4,7 @@ const allProducts = [
     {
         id: 1,
         name: "Burger",
-        description: "This is a burger ",
+        description: "This is a burger, it's delicious!  ",
         price: 10,
         img: "https://www.allrecipes.com/thmb/RTo6ddljby-5lAszPdMRwQ-aVh0=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/19863best-burger-everFranceC4x3-c9c7d5cae40b4a58a110a33e04b531d1.jpg",
         category_id: 1
@@ -144,7 +144,23 @@ const allProducts = [
         price: 5,
         img: "https://via.placeholder.com/150",
         category_id: 3
-    }
+    },
+    {
+        id: 32,
+        name: "Pizza",
+        description: "This is a pizza",
+        price: 20,
+        img: "https://www.foodandwine.com/thmb/Wd4lBRZz3X_8qBr69UOu2m7I2iw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/classic-cheese-pizza-FT-RECIPE0422-31a2c938fc2546c9a07b7011658cfd05.jpg",
+        category_id: 1
+    },
+    {
+        id: 32,
+        name: "Pizza",
+        description: "This is a pizza",
+        price: 20,
+        img: "https://www.foodandwine.com/thmb/Wd4lBRZz3X_8qBr69UOu2m7I2iw=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/classic-cheese-pizza-FT-RECIPE0422-31a2c938fc2546c9a07b7011658cfd05.jpg",
+        category_id: 1
+    },
 ];
 
 const getProducts = (category_id) => {
