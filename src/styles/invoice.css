@@ -78,6 +78,9 @@
 .payment-options {
     display: flex;
     justify-content: space-between;
+    padding: 5px;
+    background-color: rgb(209, 209, 209);
+    border-radius: 5px;
   }
   
   .payment-option {

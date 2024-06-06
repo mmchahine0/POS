@@ -9,7 +9,7 @@
   padding-left: 60px;
   padding-right: 60px;
   margin-top: 80px;
-  max-height: 25vh;
+  max-height: 20vh;
 }
 
 .cat-box {
@@ -18,7 +18,7 @@
   flex-direction: row;
   align-items: center;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background-color: rgb(255, 255, 255);
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer; 

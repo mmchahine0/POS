@@ -63,9 +63,12 @@ const Invoice = ({ selectedProducts }) => {
               <div className="invoice-product-details">
                 <div className="invoice-product-info">
                   <h3>{product.name}</h3>
-                  <p>{product.quantity}x</p>
+                  <p style={{ color: "gray" }}>{product.quantity}x</p>
                 </div>
-                <p>${product.price * product.quantity}</p>
+                <p>
+                  <span style={{ color: "gray" }}>$</span>
+                  {product.price * product.quantity}
+                </p>
               </div>
             </div>
           ))}
@@ -75,19 +78,24 @@ const Invoice = ({ selectedProducts }) => {
           <h3>Payment Summary</h3>
           <div className="payment-summary-item">
             <p>Sub Total</p>
-            <p style={{ color: "black" }}>${calculateTotal()}</p>
+            <p style={{ color: "black" }}>
+              <span style={{ color: "gray" }}>$</span>
+              {calculateTotal()}
+            </p>
           </div>
           <div className="payment-summary-item">
             <p>Tax</p>
             <p style={{ color: "black" }}>
-              ${(calculateTotal() * 0.1).toFixed(2)}
+              <span style={{ color: "gray" }}>$</span>
+              {(calculateTotal() * 0.1).toFixed(2)}
             </p>
           </div>
           <hr />
           <div className="payment-summary-item">
             <p>Total Payment</p>
             <p style={{ color: "black" }}>
-              ${(calculateTotal() * 1.1).toFixed(2)}
+              <span style={{ color: "gray" }}>$</span>
+              {(calculateTotal() * 1.1).toFixed(2)}
             </p>
           </div>
           <div className="payment-method">

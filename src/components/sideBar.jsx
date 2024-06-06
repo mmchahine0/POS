@@ -1,24 +1,23 @@
 import React from "react";
 import "../styles/sideBar.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faInfo,
+  faRightFromBracket,
+  faList,
+  faClipboardCheck,
+  faCalendar,
+  faSquarePollVertical,
+  faNewspaper,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
+import Logo from "../assets/images/logo.png";
 
 const Sidebar = () => {
-  const icon = "https://picsum.photos/200/202";
-  const images = [
-    { src: "https://picsum.photos/200/200", alt: "Image 1" },
-    { src: "https://picsum.photos/200/200", alt: "Image 2" },
-    { src: "https://picsum.photos/200/200", alt: "Image 3" },
-    { src: "https://picsum.photos/200/200", alt: "Image 4" },
-    { src: "https://picsum.photos/200/200", alt: "Image 5" },
-    { src: "https://picsum.photos/200/200", alt: "Image 6" },
-  ];
-
-  const handleImageClick = (alt) => {
-    alert(`${alt} clicked`);
+  const handleIconClick = (message) => {
+    alert(`${message} clicked`);
   };
 
-  const handleButtonClick = () => {
-    alert(`Button 2 clicked`);
-  };
   const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.href = "/login";
@@ -26,33 +25,58 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-icon">
-        <img src={icon} alt="Icon" />
+      <div className="logo">
+        <img src={Logo} alt="Icon" />
       </div>
-      <div className="sidebar-images">
-        {images.map((image, index) => (
-          <img
-            key={index}
-            src={image.src}
-            alt={image.alt}
-            className="sidebar-image"
-            onClick={() => handleImageClick(image.alt)}
-          />
-        ))}
+      <div className="sidebar-icons">
+        <div className="sidebar-icon" onClick={() => handleIconClick("List")}>
+          <FontAwesomeIcon icon={faList} />
+        </div>
+        <div
+          className="sidebar-icon"
+          onClick={() => handleIconClick("Clipboard Check")}
+        >
+          <FontAwesomeIcon icon={faClipboardCheck} />
+        </div>
+        <div
+          className="sidebar-icon"
+          onClick={() => handleIconClick("Calendar")}
+        >
+          <FontAwesomeIcon icon={faCalendar} />
+        </div>
+        <div
+          className="sidebar-icon"
+          onClick={() => handleIconClick("Square Poll Vertical")}
+        >
+          <FontAwesomeIcon icon={faSquarePollVertical} />
+        </div>
+        <div
+          className="sidebar-icon"
+          onClick={() => handleIconClick("Newspaper")}
+        >
+          <FontAwesomeIcon icon={faNewspaper} />
+        </div>
+        <div
+          className="sidebar-icon"
+          onClick={() => handleIconClick("Comments")}
+        >
+          <FontAwesomeIcon icon={faComments} />
+        </div>
       </div>
       <div className="sidebar-buttons">
-        <button
-          className="sidebar-button"
-          onClick={() => handleLogout()}
+        <div
+          className="sidebar-icon-down"
+          onClick={() => handleIconClick("Info")}
         >
-          Logout
-        </button>
-        <button
-          className="sidebar-button"
-          onClick={() => handleButtonClick()}
-        >
-          Button 2
-        </button>
+          <span style={{ color: "gray" }}>
+            <FontAwesomeIcon icon={faInfo} />
+          </span>
+        </div>
+        <div className="sidebar-icon-down" onClick={() => handleLogout()}>
+          <span style={{ color: "red" }}>
+            <FontAwesomeIcon icon={faRightFromBracket} />
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,18 @@
+import React, { useState, useEffect } from "react";
+import {
+  faBreadSlice,
+  faHamburger,
+  faUtensils,
+  faBowlFood,
+  faIceCream,
+  faDrumstickBite,
+  faAppleAlt,
+  faCoffee,
+} from "@fortawesome/free-solid-svg-icons";
 import Categories from "../components/categories";
 import { categories } from "../dummyDb/categoriesDB";
 import getProducts from "../dummyDb/allProducts";
 import { Product } from "../components/Product";
-import { useState, useEffect } from "react";
 import Invoice from "../components/Invoice";
 import { addToInvoice, removeFromInvoice } from "../utils/invoiceUtils";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,6 +22,18 @@ import TopBar from "../components/topBar";
 import "swiper/css/navigation";
 import "swiper/css";
 import "../styles/menu.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+
+const iconMapping = {
+  breakfast: faBreadSlice,
+  lunch: faHamburger,
+  dinner: faUtensils,
+  soup: faBowlFood,
+  desserts: faIceCream,
+  sideDish: faDrumstickBite,
+  appetizer: faAppleAlt,
+  beverages: faCoffee,
+};
 
 const Menu = () => {
   const [category, setCategory] = useState(categories[0].id);
@@ -25,8 +47,8 @@ const Menu = () => {
     getProducts(category)
       .then((newProducts) => {
         const paginated = [];
-        for (let i = 0; i < newProducts.length; i += 9) {
-          paginated.push(newProducts.slice(i, i + 9));
+        for (let i = 0; i < newProducts.length; i += 12) {
+          paginated.push(newProducts.slice(i, i + 12));
         }
         setProducts(paginated);
         setLoading(false);
@@ -48,25 +70,10 @@ const Menu = () => {
       removeFromInvoice(product, prevSelectedProducts)
     );
   };
+
   const handleSearchChange = (query) => {
     setSearchQuery(query);
   };
-  useEffect(() => {
-    setLoading(true);
-    getProducts(category)
-      .then((newProducts) => {
-        const paginated = [];
-        for (let i = 0; i < newProducts.length; i += 9) {
-          paginated.push(newProducts.slice(i, i + 9));
-        }
-        setProducts(paginated);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-      });
-  }, [category]);
 
   const filteredProducts = products
     .flat()
@@ -75,8 +82,8 @@ const Menu = () => {
     );
 
   const paginatedFilteredProducts = [];
-  for (let i = 0; i < filteredProducts.length; i += 9) {
-    paginatedFilteredProducts.push(filteredProducts.slice(i, i + 9));
+  for (let i = 0; i < filteredProducts.length; i += 12) {
+    paginatedFilteredProducts.push(filteredProducts.slice(i, i + 12));
   }
 
   return (
@@ -88,7 +95,7 @@ const Menu = () => {
           {categories.map((cat) => (
             <div key={cat.id} onClick={() => setCategory(cat.id)}>
               <Categories
-                img={cat.img}
+                icon={iconMapping[cat.icon]}
                 name={cat.name}
                 stock={cat.stock}
                 selected={category === cat.id}
@@ -124,7 +131,7 @@ const Menu = () => {
                     className="swiper-slide"
                     key={index}
                     spaceBetween={50}
-                    slidesPerView={3}
+                    slidesPerView={4}
                   >
                     <div className="products-container">
                       {productArray.map((product) => (
