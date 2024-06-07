@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWallet, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
 import "../styles/invoice.css";
 
 const Invoice = ({ selectedProducts }) => {
@@ -106,6 +108,11 @@ const Invoice = ({ selectedProducts }) => {
                 }`}
                 onClick={() => handlePaymentOptionChange("Cash Payment")}
               >
+                <FontAwesomeIcon
+                  style={{ fontSize: "30px", padding: "5px" }}
+                  icon={faWallet}
+                />
+                <br />
                 Cash Payment
               </button>
               <button
@@ -114,6 +121,11 @@ const Invoice = ({ selectedProducts }) => {
                 }`}
                 onClick={() => handlePaymentOptionChange("Paylater")}
               >
+                <FontAwesomeIcon
+                  style={{ fontSize: "30px" }}
+                  icon={faNoteSticky}
+                />
+                <br />
                 Paylater
               </button>
             </div>

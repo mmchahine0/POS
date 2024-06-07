@@ -40,7 +40,6 @@ const Menu = () => {
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -71,25 +70,10 @@ const Menu = () => {
     );
   };
 
-  const handleSearchChange = (query) => {
-    setSearchQuery(query);
-  };
-
-  const filteredProducts = products
-    .flat()
-    .filter((product) =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
-  const paginatedFilteredProducts = [];
-  for (let i = 0; i < filteredProducts.length; i += 12) {
-    paginatedFilteredProducts.push(filteredProducts.slice(i, i + 12));
-  }
-
   return (
     <div className="menu-container">
       <Sidebar />
-      <TopBar searchQuery={searchQuery} onSearchChange={handleSearchChange} />
+      <TopBar />
       <div className="categories-products-container">
         <div className="categories-container">
           {categories.map((cat) => (
@@ -108,7 +92,7 @@ const Menu = () => {
           <div className="products-container"></div>
         ) : (
           <div>
-            {paginatedFilteredProducts.length === 0 ? (
+            {products.length === 0 ? (
               <div
                 className="no-products"
                 style={{ paddingLeft: "60px", paddingTop: "20px" }}
@@ -126,7 +110,7 @@ const Menu = () => {
                 onSwiper={(swiper) => console.log(swiper)}
                 onSlideChange={() => console.log("slide change")}
               >
-                {paginatedFilteredProducts.map((productArray, index) => (
+                {products.map((productArray, index) => (
                   <SwiperSlide
                     className="swiper-slide"
                     key={index}

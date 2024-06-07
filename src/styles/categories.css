@@ -30,7 +30,7 @@
 }
 
 .cat-box:hover, .cat-box.selected {
-  background-color: rgba(4, 0, 255, 0.7);
+  background-color: #007bff;
   color: white;
 }
 

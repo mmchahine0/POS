@@ -3,7 +3,7 @@ import "../styles/topBar.css";
 
 const TopBar = ({ searchQuery, onSearchChange }) => {
   const user = JSON.parse(localStorage.getItem("user"));
-  if(!user) window.location.href='/login';
+  if (!user) window.location.href = "/login";
   return (
     <div className="top-bar">
       <div className="search-container">
