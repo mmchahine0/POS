@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWallet, faNoteSticky } from "@fortawesome/free-solid-svg-icons";
+import {
+  faWallet,
+  faNoteSticky,
+  faPlus,
+  faMinus,
+} from "@fortawesome/free-solid-svg-icons";
 import "../styles/invoice.css";
 
-const Invoice = ({ selectedProducts }) => {
+const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
   const [paymentOption, setPaymentOption] = useState("Cash Payment");
   const [showPayLaterPopup, setShowPayLaterPopup] = useState(false);
+  const [showCheckOutPopup, setShowCheckOutPopup] = useState(false); //lllll
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [dateTime, setDateTime] = useState("");
@@ -66,6 +72,14 @@ const Invoice = ({ selectedProducts }) => {
                 <div className="invoice-product-info">
                   <h3>{product.name}</h3>
                   <p style={{ color: "gray" }}>{product.quantity}x</p>
+                </div>
+                <div className="invoice-product-quantity">
+                  <button onClick={() => removeFromInvoice(product)}>
+                    <FontAwesomeIcon icon={faMinus} />
+                  </button>
+                  <button onClick={() => addToInvoice(product)}>
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
                 </div>
                 <p>
                   <span style={{ color: "gray" }}>$</span>
@@ -130,19 +144,7 @@ const Invoice = ({ selectedProducts }) => {
               </button>
             </div>
           </div>
-          {paymentOption === "Cash Payment" && (
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={printInvoice}
-                  onChange={() => setPrintInvoice(!printInvoice)}
-                  style={{ margin: "10px" }}
-                />
-                Print Invoice
-              </label>
-            </div>
-          )}
+
           <button
             className="payment-option"
             style={{
@@ -190,6 +192,32 @@ const Invoice = ({ selectedProducts }) => {
                 value={dateTime}
                 onChange={(e) => setDateTime(e.target.value)}
               />
+            </div>
+            <div className="invoice-products-container">
+              <h4>Selected Items</h4>
+              {selectedProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="invoice-product"
+                  style={{
+                    marginTop: "-10px",
+                    marginBottom: "-10px",
+                    paddingTop: "-10px",
+                    paddingBottom: "-10px",
+                  }}
+                >
+                  <div className="invoice-product-details">
+                    <div className="invoice-product-info">
+                      <h4>{product.name}</h4>
+                      <p>
+                        <span style={{ color: "gray" }}>$</span>
+                        {product.price * product.quantity}
+                      </p>
+                    </div>
+                    <p>{product.quantity}x</p>
+                  </div>
+                </div>
+              ))}
             </div>
             <div>
               <p>Total Amount to Pay: ${(calculateTotal() * 1.1).toFixed(2)}</p>

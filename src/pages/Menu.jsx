@@ -20,6 +20,7 @@ import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
 import allProducts from "../dummyDb/allProducts";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 import "swiper/css";
 import "../styles/menu.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -159,16 +160,9 @@ const Menu = () => {
                 navigation
                 pagination={{ clickable: true }}
                 scrollbar={{ draggable: true }}
-                onSwiper={(swiper) => console.log(swiper)}
-                onSlideChange={() => console.log("slide change")}
               >
                 {filteredProducts.map((productArray, index) => (
-                  <SwiperSlide
-                    className="swiper-slide"
-                    key={index}
-                    spaceBetween={50}
-                    slidesPerView={4}
-                  >
+                  <SwiperSlide className="swiper-slide" key={index}>
                     <div className="products-container">
                       {productArray.map((product) => (
                         <Product
@@ -194,7 +188,11 @@ const Menu = () => {
       </div>
       {selectedProducts.length > 0 && (
         <div className="invoice-container">
-          <Invoice selectedProducts={selectedProducts} />
+          <Invoice
+            selectedProducts={selectedProducts}
+            addToInvoice={handleAddToInvoice}
+            removeFromInvoice={handleRemoveFromInvoice}
+          />
         </div>
       )}
     </div>

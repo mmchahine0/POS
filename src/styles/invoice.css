@@ -24,15 +24,14 @@
     overflow-x: hidden;
 }
 
-.invoice-product{
-    display: flex;
-    padding: 10px;
-    gap: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    align-items: center;
-    border-radius: 3px;
-    width: 350px;
-    
+.invoice-product {
+  position: relative;
+  display: flex;
+  padding: 10px;
+  gap: 10px;
+  align-items: center;
+  border-radius: 3px;
+  width: 350px;
 }
 
 .invoice-product img{
@@ -172,5 +171,34 @@
   
   .pay-later-popup-content button:hover {
     background-color: #0056b3;
+  }
+  
+  
+  .invoice-product-quantity {
+    position: absolute;
+    top: 20px;
+    right: 50px; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .invoice-product-quantity button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .invoice-product-quantity button:hover {
+    background-color: #0056b3;
+  }
+  
+  .invoice-product-quantity span {
+    font-size: 16px;
+    font-weight: bold;
   }
   
