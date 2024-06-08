@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/topBar.css";
 
-const TopBar = ({ searchQuery, onSearchChange }) => {
+const TopBar = ({ searchQuery, onSearchChange, onSearchFocus }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) window.location.href = "/login";
   return (
@@ -13,6 +13,7 @@ const TopBar = ({ searchQuery, onSearchChange }) => {
           placeholder="Search Your Menu Here"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
+          onFocus={onSearchFocus}
         />
       </div>
       <div className="profile-container">

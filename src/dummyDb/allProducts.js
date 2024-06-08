@@ -163,13 +163,4 @@ const allProducts = [
     },
 ];
 
-const getProducts = (category_id) => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const filteredProducts = allProducts.filter((product) => product.category_id === category_id);
-            resolve(filteredProducts);
-        }, 10);
-    });
-};
-
-export default getProducts;
+export default allProducts;
