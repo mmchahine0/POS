@@ -4,6 +4,7 @@
     list-style: none;
     padding-left: 50px;
     padding-right: 50px;
+    padding-bottom: 50px;
 }
   
 .product {
@@ -95,7 +96,8 @@ img{
 
 #added{
     color: white;
-    background-color: #3987d0;
+    background-color: #007bff;
+;
 }
 
 .actions span{

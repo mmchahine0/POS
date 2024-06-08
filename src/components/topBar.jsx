@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import "../styles/topBar.css";
 
 const TopBar = ({ searchQuery, onSearchChange, onSearchFocus }) => {
@@ -10,11 +12,14 @@ const TopBar = ({ searchQuery, onSearchChange, onSearchFocus }) => {
         <input
           type="text"
           className="search-input"
-          placeholder="Search Your Menu Here"
+          placeholder="Search Your Items Here"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           onFocus={onSearchFocus}
         />
+        <div className="search-icon">
+          <FontAwesomeIcon icon={faSearch} />
+        </div>
       </div>
       <div className="profile-container">
         <img
