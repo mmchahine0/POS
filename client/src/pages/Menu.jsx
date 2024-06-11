@@ -120,7 +120,7 @@ const Menu = () => {
   }, [category]);
 
   return (
-    <div className="menu-container">
+    <div className="screen-container">
       <Sidebar />
       <TopBar
         searchQuery={searchQuery}
