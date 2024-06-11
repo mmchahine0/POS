@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
   {
@@ -11,11 +11,12 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    // img_url: {
+    //   type: String,
+    //   required: true,
+    // },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
-
 
 module.exports = mongoose.model("User", userSchema);
