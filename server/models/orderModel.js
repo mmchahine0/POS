@@ -1,44 +1,53 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const orderSchema = mongoose.Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: false,
       ref: "User",
     },
     orderItems: [
       {
-        name: { type: String, required: true },
-        amount: { type: Number, required: true },
-        imageUrl: { type: String, required: true },
-        price: { type: Number, required: true },
         product: {
-          type: mongoose.Schema.Types.ObjectId,
+          type: Schema.Types.ObjectId,
           required: true,
           ref: "Product",
         },
+        amount: { type: Number, required: true },
+        price: { type: Number, required: true },
       },
     ],
     paymentMethod: {
       type: String,
       required: true,
+      enum: ["Cash Payment", "Pay Later"],
     },
-    paymentResult: {
-      id: { type: String },
-      status: { type: String },
-      update_time: { type: String },
-      email_address: { type: String },
+    customerInfo: {
+      name: { type: String },
+      phoneNumber: { type: String },
     },
+    status: {
+      type: String,
+      required: true,
+      enum: ["inprogress", "complete"],
+    },
+    // paymentResult: {
+    //   id: { type: String },
+    //   status: { type: String },
+    //   update_time: { type: String },
+    //   email_address: { type: String },
+    // },
     taxPrice: {
       type: Number,
       required: true,
-      default: 0.0,
+      default: 0,
     },
     totalPrice: {
       type: Number,
       required: true,
-      default: 0.0,
+      default: 0,
     },
     isPaid: {
       type: Boolean,
@@ -49,9 +58,7 @@ const orderSchema = mongoose.Schema(
       type: Date,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Order", orderSchema);
