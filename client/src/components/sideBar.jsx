@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/sideBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -18,8 +18,8 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleIconClick = (route) => {
-    navigate(route);
+  const handleIconClick = (theRoute) => {
+    navigate(theRoute);
   };
 
   const handleLogout = () => {
@@ -35,17 +35,17 @@ const Sidebar = () => {
       <div className="sidebar-icons">
         <div
           className={`sidebar-icon ${
-            location.pathname === "/menu" ? "selected" : ""
+            location.pathname === "/Menu" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/menu")}
+          onClick={() => handleIconClick("/Menu")}
         >
           <FontAwesomeIcon icon={faList} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/clipboard-check" ? "selected" : ""
+            location.pathname === "/Orders" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/clipboard-check")}
+          onClick={() => handleIconClick("/Orders")}
         >
           <FontAwesomeIcon icon={faClipboardCheck} />
         </div>

@@ -9,9 +9,9 @@ import {
 import "../styles/invoice.css";
 
 const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
-  const [paymentOption, setPaymentOption] = useState("Cash Payment");
+  const [paymentOption, setPaymentOption] = useState("");
   const [showPayLaterPopup, setShowPayLaterPopup] = useState(false);
-  const [showCheckOutPopup, setShowCheckOutPopup] = useState(false); //lllll
+  const [showCheckOutPopup, setShowCheckOutPopup] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [dateTime, setDateTime] = useState("");
@@ -19,14 +19,14 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
 
   const handlePaymentOptionChange = (option) => {
     setPaymentOption(option);
-    if (option === "Cash Payment") {
-      setPrintInvoice(false);
-    }
   };
 
   const handlePlaceOrder = () => {
     if (paymentOption === "Paylater") {
       setShowPayLaterPopup(true);
+    }
+    if (paymentOption === "Cash Payment") {
+      setShowCheckOutPopup(true);
     } else {
       // Handle Cash Payment Order
       console.log("Checkout order with details:", {
@@ -38,6 +38,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
 
   const handleClosePopup = () => {
     setShowPayLaterPopup(false);
+    setShowCheckOutPopup(false);
   };
 
   const handleCheckout = () => {
@@ -46,6 +47,17 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
       customerName,
       customerPhone,
       dateTime,
+      totalAmount: (calculateTotal() * 1.1).toFixed(2),
+      printInvoice,
+    });
+    // Close the popup
+    handleClosePopup();
+  };
+
+  const handleCheckoutCash = () => {
+    // Handle the checkout process for Cash Payment
+    console.log("Checkout order with details:", {
+      customerName,
       totalAmount: (calculateTotal() * 1.1).toFixed(2),
       printInvoice,
     });
@@ -234,6 +246,65 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
               </label>
             </div>
             <button onClick={handleCheckout}>Checkout Order</button>
+          </div>
+        </div>
+      )}
+      {showCheckOutPopup && (
+        <div className="pay-later-popup">
+          <div className="pay-later-popup-content">
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
+            <h3>Cash payment Order Details</h3>
+            <div>
+              <label>Customer Name:</label>
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+              />
+            </div>
+            <div className="invoice-products-container">
+              <h4>Selected Items</h4>
+              {selectedProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="invoice-product"
+                  style={{
+                    marginTop: "-10px",
+                    marginBottom: "-10px",
+                    paddingTop: "-10px",
+                    paddingBottom: "-10px",
+                  }}
+                >
+                  <div className="invoice-product-details">
+                    <div className="invoice-product-info">
+                      <h4>{product.name}</h4>
+                      <p>
+                        <span style={{ color: "gray" }}>$</span>
+                        {product.price * product.quantity}
+                      </p>
+                    </div>
+                    <p>{product.quantity}x</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div>
+              <p>Total Amount to Pay: ${(calculateTotal() * 1.1).toFixed(2)}</p>
+            </div>
+            <div>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={printInvoice}
+                  onChange={() => setPrintInvoice(!printInvoice)}
+                  style={{ margin: "10px" }}
+                />
+                Print Invoice
+              </label>
+            </div>
+            <button onClick={handleCheckoutCash}>Checkout Order</button>
           </div>
         </div>
       )}
