@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faCalendarDays } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFilter,
+  faCalendarDays,
+  faPrint,
+  faArrowsUpDown,
+} from "@fortawesome/free-solid-svg-icons";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styles/Orders.css";
+import { CSVLink } from "react-csv";
 
 // Dummy data
 const dummyOrders = Array.from({ length: 40 }, (_, index) => ({
@@ -13,12 +19,7 @@ const dummyOrders = Array.from({ length: 40 }, (_, index) => ({
   createdAt: new Date(2023, 5, index + 1).toISOString(),
   customerInfo: { name: `Customer ${index + 1}` },
   isPaid: index % 2 === 0,
-  status:
-    index % 3 === 0
-      ? "paylater"
-      : index % 3 === 1
-      ? "cash payment"
-      : "inprogress",
+  status: index % 3 === 0 ? "paylater" : "cash payment",
   totalPrice: (index + 1) * 100,
 }));
 
@@ -27,7 +28,7 @@ const Orders = () => {
   const [selectedType, setSelectedType] = useState("All Orders");
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage] = useState(14);
+  const [ordersPerPage] = useState(13);
   const [sortConfig, setSortConfig] = useState({
     key: "createdAt",
     direction: "asc",
@@ -35,6 +36,7 @@ const Orders = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [selectedOrders, setSelectedOrders] = useState([]);
 
   const handlePopUp = () => {
     setShowPopup(true);
@@ -106,6 +108,27 @@ const Orders = () => {
     setSelectedType(type);
   };
 
+  const handleSelectOrder = (orderId) => {
+    setSelectedOrders((prevSelectedOrders) => {
+      if (prevSelectedOrders.includes(orderId)) {
+        return prevSelectedOrders.filter((id) => id !== orderId);
+      } else {
+        return [...prevSelectedOrders, orderId];
+      }
+    });
+  };
+
+  const csvData = currentOrders
+    .filter((order) => selectedOrders.includes(order._id))
+    .map((order) => ({
+      orderId: order._id,
+      dateOrdered: new Date(order.createdAt).toLocaleDateString(),
+      customer: order.customerInfo.name,
+      payment: order.isPaid ? "Paid" : "Unpaid",
+      status: order.status,
+      price: `$${order.totalPrice.toFixed(2)}`,
+    }));
+
   return (
     <div className="screen-container">
       <Sidebar />
@@ -128,49 +151,92 @@ const Orders = () => {
           <div className="filters">
             <div className="icons">
               <FontAwesomeIcon icon={faFilter} />
-              <span style={{ fontSize: "1.0rem", fontWeight: "500" }}>
+              <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
                 Filter
               </span>
             </div>
-            <div className="icons" onClick={() => handlePopUp()}>
+            <div className="icons" onClick={handlePopUp}>
               <FontAwesomeIcon icon={faCalendarDays} />
-              <span style={{ fontSize: "1.0rem", fontWeight: "500" }}>
+              <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
                 Calendar
               </span>
             </div>
+            <CSVLink
+              data={csvData}
+              filename={"selected_orders.csv"}
+              style={{ textDecoration: "none" }}
+            >
+              <div className="icons">
+                <FontAwesomeIcon icon={faPrint} />
+                <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
+                  Print CSV
+                </span>
+              </div>
+            </CSVLink>
           </div>
         </div>
         <div className="orders">
           <table>
             <thead>
               <tr>
-                <th>Order ID</th>
-                <th onClick={() => handleSort("createdAt")}>Date Ordered</th>
-                <th onClick={() => handleSort("customerInfo.name")}>
-                  Customer
+                <th style={{ cursor: "default" }}>Order ID</th>
+                <th onClick={() => handleSort("createdAt")}>
+                  Date Ordered <FontAwesomeIcon icon={faArrowsUpDown} />
                 </th>
-                <th onClick={() => handleSort("isPaid")}>Payment</th>
-                <th onClick={() => handleSort("status")}>Status</th>
-                <th onClick={() => handleSort("totalPrice")}>Price</th>
-                <th>Action</th>
+                <th onClick={() => handleSort("customerInfo.name")}>
+                  Customer <FontAwesomeIcon icon={faArrowsUpDown} />
+                </th>
+                <th onClick={() => handleSort("isPaid")}>
+                  Payment <FontAwesomeIcon icon={faArrowsUpDown} />
+                </th>
+                <th onClick={() => handleSort("status")}>
+                  Status <FontAwesomeIcon icon={faArrowsUpDown} />
+                </th>
+                <th onClick={() => handleSort("totalPrice")}>
+                  Price <FontAwesomeIcon icon={faArrowsUpDown} />
+                </th>
+                <th style={{ cursor: "default" }}>Action</th>
               </tr>
             </thead>
             <tbody>
-              {currentOrders.map((order) => (
-                <tr key={order._id}>
-                  <td>{order._id}</td>
-                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td>{order.customerInfo.name}</td>
-                  <td>{order.isPaid ? "Paid" : "Unpaid"}</td>
-                  <td>{order.status}</td>
-                  <td>${order.totalPrice.toFixed(2)}</td>
-                  <td>
-                    {/* <button onClick={() => generatePDF(order)}>
-                      Print PDF
-                    </button> */}
-                  </td>
-                </tr>
-              ))}
+              {currentOrders.map((order) => {
+                const paymentStyle = {
+                  borderLeft: order.isPaid
+                    ? "3px solid green"
+                    : "3px solid red",
+                  borderRadius: "5px",
+                };
+
+                let statusStyle = { borderRadius: "5px" };
+                if (order.status === "paylater") {
+                  statusStyle.borderLeft = "3px solid orange";
+                } else if (order.status === "cash payment") {
+                  statusStyle.borderLeft = "3px solid purple";
+                } else {
+                  statusStyle.backgroundColor = "transparent";
+                }
+
+                return (
+                  <tr key={order._id}>
+                    <td>{order._id}</td>
+                    <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td>{order.customerInfo.name}</td>
+                    <td style={paymentStyle}>
+                      {order.isPaid ? "Paid" : "Unpaid"}
+                    </td>
+                    <td style={statusStyle}>{order.status}</td>
+                    <td>${order.totalPrice.toFixed(2)}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(order._id)}
+                        onChange={() => handleSelectOrder(order._id)}
+                        className="check-box"
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           <div className="pagination">
@@ -188,42 +254,28 @@ const Orders = () => {
       {showPopup && (
         <div className="popup">
           <div className="popup-content">
-            <span className="close" onClick={handleClosePopup}>
-              &times;
-            </span>
-            <div className="date-picker">
-              <label>Start Date:</label>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-                placeholderText="Start Date"
-              />
+            <h3>Select Date Range</h3>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Start Date"
+            />
+            <DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              placeholderText="End Date"
+            />
+            <div className="popup-buttons">
+              <button onClick={handleClosePopup}>Close</button>
+              <button onClick={handleResetDates}>Reset</button>
             </div>
-            <div className="date-picker">
-              <label>End Date:</label>
-              <DatePicker
-                selected={endDate}
-                onChange={(date) => setEndDate(date)}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-                placeholderText="End Date"
-              />
-            </div>
-            <button className="reset-button" onClick={handleResetDates}>
-              Reset Dates
-            </button>
-            <button
-              className="reset-button"
-              style={{ marginLeft: "10px" }}
-              onClick={handleClosePopup}
-            >
-              Set Dates
-            </button>
           </div>
         </div>
       )}
