@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/notFound";
 import Menu from "./pages/Menu";
 import Orders from "./pages/Orders";
+import Admin from "./pages/Admin";
 
 //components
 
@@ -18,6 +19,7 @@ function App() {
           <Route path="/Login" element={<Login />} />
           <Route path="/Menu" element={<Menu />} />
           <Route path="/Orders" element={<Orders />} />
+          <Route path="/Admin" element={<Admin />} />
         </Routes>
       </BrowserRouter>
     </div>

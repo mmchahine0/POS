@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFilter,
-  faCalendarDays,
   faPrint,
   faArrowsUpDown,
+  faFileInvoice,
+  faTimesCircle,
+  faCircleCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
@@ -19,7 +20,7 @@ const dummyOrders = Array.from({ length: 40 }, (_, index) => ({
   createdAt: new Date(2023, 5, index + 1).toISOString(),
   customerInfo: { name: `Customer ${index + 1}` },
   isPaid: index % 2 === 0,
-  status: index % 3 === 0 ? "paylater" : "cash payment",
+  status: ["pending", "new", "completed", "canceled"][index % 4],
   totalPrice: (index + 1) * 100,
 }));
 
@@ -28,27 +29,28 @@ const Orders = () => {
   const [selectedType, setSelectedType] = useState("All Orders");
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage] = useState(13);
+  const [ordersPerPage] = useState(12);
   const [sortConfig, setSortConfig] = useState({
     key: "createdAt",
     direction: "asc",
   });
-  const [showPopup, setShowPopup] = useState(false);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [selectedOrders, setSelectedOrders] = useState([]);
-
-  const handlePopUp = () => {
-    setShowPopup(true);
-  };
-
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
+  const [showCheckConfirmationPopup, setShowCheckConfirmationPopup] =
+    useState(false);
+  const [showCancelConfirmationPopup, setShowCancelPopup] = useState(false);
+  const [showInvoicePopup, setShowInvoicePopup] = useState(false);
+  const [order, setOrder] = useState("");
+  const [printInvoice, setPrintInvoice] = useState(false);
 
   const handleResetDates = () => {
     setStartDate(null);
     setEndDate(null);
+  };
+  const handleClosePopup = () => {
+    setShowCancelPopup(false);
+    setShowCheckConfirmationPopup(false);
+    setShowInvoicePopup(false);
   };
 
   useEffect(() => {
@@ -108,26 +110,36 @@ const Orders = () => {
     setSelectedType(type);
   };
 
-  const handleSelectOrder = (orderId) => {
-    setSelectedOrders((prevSelectedOrders) => {
-      if (prevSelectedOrders.includes(orderId)) {
-        return prevSelectedOrders.filter((id) => id !== orderId);
-      } else {
-        return [...prevSelectedOrders, orderId];
-      }
-    });
+  const handleCancelOrder = (orderId) => {
+    setOrder(orderId);
+    setShowCancelPopup(true);
   };
 
-  const csvData = currentOrders
-    .filter((order) => selectedOrders.includes(order._id))
-    .map((order) => ({
-      orderId: order._id,
-      dateOrdered: new Date(order.createdAt).toLocaleDateString(),
-      customer: order.customerInfo.name,
-      payment: order.isPaid ? "Paid" : "Unpaid",
-      status: order.status,
-      price: `$${order.totalPrice.toFixed(2)}`,
-    }));
+  const handleCheckoutOrder = (orderId) => {
+    setOrder(orderId);
+    setShowCheckConfirmationPopup(true);
+  };
+  const handlePrintOrder = (orderId) => {
+    setOrder(orderId);
+    setShowInvoicePopup(true);
+  };
+  const handleCheckout = () => {
+    // Handle the checkout process for Cash Payment
+    handleClosePopup();
+  };
+  const handleCancel = () => {
+    // Handle the checkout process for Cash Payment
+    // Close the popup
+    handleClosePopup();
+  };
+  const csvData = dummyOrders.map((order) => ({
+    orderId: order._id,
+    dateOrdered: new Date(order.createdAt).toLocaleDateString(),
+    customer: order.customerInfo.name,
+    payment: order.isPaid ? "Paid" : "Paylater",
+    status: order.status.charAt(0).toUpperCase() + order.status.slice(1), // Capitalize first letter
+    price: `$${order.totalPrice.toFixed(2)}`,
+  }));
 
   return (
     <div className="screen-container">
@@ -136,34 +148,52 @@ const Orders = () => {
         <TopBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <div className="check-type-container">
           <div className="types">
-            {["All Orders", "Paylater", "Cash Payment"].map((type) => (
-              <div
-                key={type}
-                className={`type ${selectedType === type ? "selected" : ""}`}
-                onClick={() => handleTypeClick(type)}
-              >
-                <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
-                  {type}
-                </span>
-              </div>
-            ))}
+            {["All Orders", "Pending", "New", "Completed", "Canceled"].map(
+              (type) => (
+                <div
+                  key={type}
+                  className={`type ${selectedType === type ? "selected" : ""}`}
+                  onClick={() => handleTypeClick(type)}
+                >
+                  <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
+                    {type}
+                  </span>
+                </div>
+              )
+            )}
           </div>
           <div className="filters">
-            <div className="icons">
-              <FontAwesomeIcon icon={faFilter} />
-              <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
-                Filter
-              </span>
+            <div>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Start Date"
+                className="date-picker"
+                onFocus={(e) => e.target.setAttribute("readonly", true)}
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                placeholderText="End Date"
+                className="date-picker"
+                onFocus={(e) => e.target.setAttribute("readonly", true)}
+              />
+              <button className="buttons" onClick={handleResetDates}>
+                Reset
+              </button>
             </div>
-            <div className="icons" onClick={handlePopUp}>
-              <FontAwesomeIcon icon={faCalendarDays} />
-              <span style={{ fontSize: "1.1rem", fontWeight: "500" }}>
-                Calendar
-              </span>
-            </div>
+          </div>
+          <div className="filters">
             <CSVLink
               data={csvData}
-              filename={"selected_orders.csv"}
+              filename={"orders.csv"}
               style={{ textDecoration: "none" }}
             >
               <div className="icons">
@@ -201,19 +231,32 @@ const Orders = () => {
             <tbody>
               {currentOrders.map((order) => {
                 const paymentStyle = {
-                  borderLeft: order.isPaid
-                    ? "3px solid green"
-                    : "3px solid red",
-                  borderRadius: "5px",
+                  backgroundColor: order.isPaid
+                    ? "rgba(0, 128, 0, 0.1)"
+                    : "rgba(255, 0, 0, 0.1)",
+                  color: order.isPaid ? "green" : "red",
+                  borderRadius: "10px",
+                  padding: "5px 10px",
+                  textAlign: "center",
                 };
 
-                let statusStyle = { borderRadius: "5px" };
-                if (order.status === "paylater") {
-                  statusStyle.borderLeft = "3px solid orange";
-                } else if (order.status === "cash payment") {
-                  statusStyle.borderLeft = "3px solid purple";
-                } else {
-                  statusStyle.backgroundColor = "transparent";
+                let statusStyle = {
+                  borderRadius: "10px",
+                  textAlign: "center",
+                  padding: "5px 10px",
+                };
+                if (order.status === "pending") {
+                  statusStyle.color = "orange";
+                  statusStyle.backgroundColor = "rgba(255, 165, 0, 0.1)";
+                } else if (order.status === "new") {
+                  statusStyle.color = "purple";
+                  statusStyle.backgroundColor = "rgba(0, 0, 255, 0.1)";
+                } else if (order.status === "completed") {
+                  statusStyle.color = "green";
+                  statusStyle.backgroundColor = "rgba(0, 128, 0, 0.1)";
+                } else if (order.status === "canceled") {
+                  statusStyle.color = "red";
+                  statusStyle.backgroundColor = "rgba(255, 0, 0, 0.1)";
                 }
 
                 return (
@@ -222,17 +265,38 @@ const Orders = () => {
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td>{order.customerInfo.name}</td>
                     <td style={paymentStyle}>
-                      {order.isPaid ? "Paid" : "Unpaid"}
+                      {order.isPaid ? "Paid" : "Paylater"}
                     </td>
-                    <td style={statusStyle}>{order.status}</td>
+                    <td style={statusStyle}>
+                      {order.status.charAt(0).toUpperCase() +
+                        order.status.slice(1)}
+                    </td>
                     <td>${order.totalPrice.toFixed(2)}</td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedOrders.includes(order._id)}
-                        onChange={() => handleSelectOrder(order._id)}
-                        className="check-box"
+                    <td className="action-icons">
+                      <FontAwesomeIcon
+                        icon={faFileInvoice}
+                        title="Print Order"
+                        className="action-icon"
+                        onClick={() => handlePrintOrder(order._id)}
                       />
+                      {order.status !== "completed" && (
+                        <div className="action-icons">
+                          <FontAwesomeIcon
+                            icon={faTimesCircle}
+                            title="Cancel Order"
+                            className="action-icon"
+                            style={{ marginLeft: "15px" }}
+                            onClick={() => handleCancelOrder(order._id)}
+                          />
+                          <FontAwesomeIcon
+                            icon={faCircleCheck}
+                            title="Checkout Order"
+                            className="action-icon"
+                            style={{ marginLeft: "15px" }}
+                            onClick={() => handleCheckoutOrder(order._id)}
+                          />
+                        </div>
+                      )}
                     </td>
                   </tr>
                 );
@@ -251,31 +315,46 @@ const Orders = () => {
           </div>
         </div>
       </div>
-      {showPopup && (
+      {showCheckConfirmationPopup && (
         <div className="popup">
           <div className="popup-content">
-            <h3>Select Date Range</h3>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              placeholderText="Start Date"
-            />
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              placeholderText="End Date"
-            />
-            <div className="popup-buttons">
-              <button onClick={handleClosePopup}>Close</button>
-              <button onClick={handleResetDates}>Reset</button>
-            </div>
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
+            <label>Are you sure you want to Checkout {order} ?</label>
+            <button onClick={handleCheckout}>Checkout Order</button>
+            <button onClick={handleClosePopup}>Cancel</button>
+          </div>
+        </div>
+      )}
+      {showCancelConfirmationPopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
+            <label>Are you sure you want to Delete {order} ?</label>
+            <button onClick={handleCancel}>Delete Order</button>
+            <button onClick={handleClosePopup}>Cancel</button>
+          </div>
+        </div>
+      )}
+      {showInvoicePopup && (
+        <div className="popup">
+          <div className="popup-content">
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
+            <label>invoice of Order: {order}</label>
+            <label>
+              <input
+                type="checkbox"
+                checked={printInvoice}
+                onChange={() => setPrintInvoice(!printInvoice)}
+                style={{ margin: "10px" }}
+              />
+              Print Invoice
+            </label>
           </div>
         </div>
       )}

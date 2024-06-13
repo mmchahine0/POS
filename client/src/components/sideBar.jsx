@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import "../styles/sideBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -51,9 +50,9 @@ const Sidebar = () => {
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/calendar" ? "selected" : ""
+            location.pathname === "/Admin" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/calendar")}
+          onClick={() => handleIconClick("/Admin")}
         >
           <FontAwesomeIcon icon={faCalendar} />
         </div>
