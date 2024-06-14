@@ -21,24 +21,20 @@ const orderSchema = mongoose.Schema(
     ],
     paymentMethod: {
       type: String,
-      required: true,
-      enum: ["Cash Payment", "Pay Later"],
+      // required: true,
+      enum: ["Paid", "Pay Later"], // paid , pay later , Cash Payment
     },
     customerInfo: {
       name: { type: String },
       phoneNumber: { type: String },
+      // address: { type: String },
     },
     status: {
       type: String,
       required: true,
-      enum: ["inprogress", "complete"],
+      enum: ["New", "Pending", "Cancelled", "Completed"],
+      default: "New",
     },
-    // paymentResult: {
-    //   id: { type: String },
-    //   status: { type: String },
-    //   update_time: { type: String },
-    //   email_address: { type: String },
-    // },
     taxPrice: {
       type: Number,
       required: true,

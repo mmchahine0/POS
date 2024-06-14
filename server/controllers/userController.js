@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const { username } = req.body;
+    const { username, role } = req.body;
     if (!username || !req.body.password)
       return res.status(400).json({ message: "All fields are required" });
 
@@ -40,6 +40,7 @@ exports.createUser = async (req, res) => {
     const newUser = await User.create({
       username,
       password: hashedPassword,
+      role,
     });
 
     const { password, ...others } = newUser._doc;
