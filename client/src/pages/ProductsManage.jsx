@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
 import dummyProducts from "../dummyDb/allProducts";
+import TaxManagement from "../components/TaxManagement ";
 import "../styles/Admin.css";
 
 const ProductsManage = () => {
   const [products, setProducts] = useState(dummyProducts);
   const [showPopup, setShowPopup] = useState(false);
+  const [showTax, setTaxPopup] = useState(false);
+  const [taxRate, setTaxRate] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -16,6 +19,8 @@ const ProductsManage = () => {
   const [isavailable, setIsAvailable] = useState(true);
   const [weeklyAvailability, setWeeklyAvailability] = useState([]);
   const [image, setImage] = useState("default.png");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [productsPerPage] = useState(10);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -44,11 +49,20 @@ const ProductsManage = () => {
     setShowPopup(true);
   };
 
+  const handleOpenTaxPopup = () => {
+    setTaxPopup(true);
+  };
+
   const handleClosePopup = () => {
     setSelectedProduct(null);
     setShowPopup(false);
+    setTaxPopup(false);
   };
 
+  const handleTaxChange = (e) => {
+    setTaxRate(e.target.value);
+  };
+  const handleTaxUpdate = () => {};
   const handleCreateOrUpdate = (event) => {
     event.preventDefault();
     if (selectedProduct) {
@@ -91,7 +105,23 @@ const ProductsManage = () => {
   };
 
   const handleDelete = (id) => {
-    setProducts(products.filter((product) => product.id !== id));
+    // setProducts(products.filter((product) => product.id !== id));
+  };
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(products.length / productsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const handleClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -105,6 +135,13 @@ const ProductsManage = () => {
             onClick={() => handleOpenPopup(null)}
           >
             Create Product
+          </button>
+          <button
+            className="button-admin"
+            style={{ marginLeft: "10px" }}
+            onClick={() => handleOpenTaxPopup()}
+          >
+            Update Tax
           </button>
           <table className="product-table">
             <thead>
@@ -122,7 +159,7 @@ const ProductsManage = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {currentProducts.map((product) => (
                 <tr key={product.id}>
                   <td>{product.id}</td>
                   <td>{product.name}</td>
@@ -163,12 +200,26 @@ const ProductsManage = () => {
               ))}
             </tbody>
           </table>
+          <div className="pagination">
+            {pageNumbers.map((number) => (
+              <button
+                key={number}
+                onClick={() => handleClick(number)}
+                className={currentPage === number ? "active" : ""}
+              >
+                {number}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {showPopup && (
         <div className="modal">
           <div className="modal-content">
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
             <h2>{selectedProduct ? "Update Product" : "Create Product"}</h2>
             <form onSubmit={handleCreateOrUpdate}>
               <input
@@ -231,10 +282,40 @@ const ProductsManage = () => {
                 onChange={(e) => setImage(e.target.value)}
                 required
               />
-              <button type="submit">
+              <button className="button-admin" type="submit">
                 {selectedProduct ? "Update" : "Create"}
               </button>
-              <button type="button" onClick={handleClosePopup}>
+              <button
+                className="button-admin"
+                style={{ marginTop: "5px", backgroundColor: "red" }}
+                type="button"
+                onClick={handleClosePopup}
+              >
+                Close
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+      {showTax && (
+        <div className="modal">
+          <div className="modal-content">
+            <form onSubmit={handleTaxUpdate}>
+              <h2 className="h2-admin">Manage Tax Rate</h2>
+              <input
+                className="input-admin"
+                type="number"
+                value={taxRate}
+                onChange={handleTaxChange}
+                placeholder="Tax rate (%)"
+              />
+              <button className="button-admin">Update Tax Rate</button>
+              <button
+                className="button-admin"
+                style={{ marginTop: "5px", backgroundColor: "red" }}
+                type="button"
+                onClick={handleClosePopup}
+              >
                 Close
               </button>
             </form>

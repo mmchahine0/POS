@@ -9,7 +9,6 @@ import Orders from "./pages/Orders";
 import UsersManage from "./pages/UsersManage";
 import ProductsManage from "./pages/ProductsManage";
 import CategoriesManage from "./pages/CategoriesManage";
-import TaxManage from "./pages/TaxManage";
 //components
 
 function App() {
@@ -24,7 +23,6 @@ function App() {
           <Route path="/usersManage" element={<UsersManage />} />
           <Route path="/productsManage" element={<ProductsManage />} />
           <Route path="/categoriesManage" element={<CategoriesManage />} />
-          <Route path="/taxManage" element={<TaxManage />} />
         </Routes>
       </BrowserRouter>
     </div>
