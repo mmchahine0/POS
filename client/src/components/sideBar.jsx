@@ -34,49 +34,49 @@ const Sidebar = () => {
       <div className="sidebar-icons">
         <div
           className={`sidebar-icon ${
-            location.pathname === "/Menu" ? "selected" : ""
+            location.pathname === "/menu" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/Menu")}
+          onClick={() => handleIconClick("/menu")}
         >
           <FontAwesomeIcon icon={faList} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/Orders" ? "selected" : ""
+            location.pathname === "/orders" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/Orders")}
+          onClick={() => handleIconClick("/orders")}
         >
           <FontAwesomeIcon icon={faClipboardCheck} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/Admin" ? "selected" : ""
+            location.pathname === "/usersManage" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/Admin")}
+          onClick={() => handleIconClick("/usersManage")}
         >
           <FontAwesomeIcon icon={faCalendar} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/square-poll-vertical" ? "selected" : ""
+            location.pathname === "/productsManage" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/square-poll-vertical")}
+          onClick={() => handleIconClick("/productsManage")}
         >
           <FontAwesomeIcon icon={faSquarePollVertical} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/newspaper" ? "selected" : ""
+            location.pathname === "/categoriesManage" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/newspaper")}
+          onClick={() => handleIconClick("/categoriesManage")}
         >
           <FontAwesomeIcon icon={faNewspaper} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/comments" ? "selected" : ""
+            location.pathname === "/taxManage" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/comments")}
+          onClick={() => handleIconClick("/taxManage")}
         >
           <FontAwesomeIcon icon={faComments} />
         </div>

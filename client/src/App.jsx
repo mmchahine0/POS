@@ -6,8 +6,10 @@ import Login from "./pages/Login";
 import NotFound from "./pages/notFound";
 import Menu from "./pages/Menu";
 import Orders from "./pages/Orders";
-import Admin from "./pages/Admin";
-
+import UsersManage from "./pages/UsersManage";
+import ProductsManage from "./pages/ProductsManage";
+import CategoriesManage from "./pages/CategoriesManage";
+import TaxManage from "./pages/TaxManage";
 //components
 
 function App() {
@@ -16,10 +18,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<NotFound />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Menu" element={<Menu />} />
-          <Route path="/Orders" element={<Orders />} />
-          <Route path="/Admin" element={<Admin />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/usersManage" element={<UsersManage />} />
+          <Route path="/productsManage" element={<ProductsManage />} />
+          <Route path="/categoriesManage" element={<CategoriesManage />} />
+          <Route path="/taxManage" element={<TaxManage />} />
         </Routes>
       </BrowserRouter>
     </div>
