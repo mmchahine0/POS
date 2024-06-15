@@ -69,4 +69,5 @@
   flex-direction: column;
   flex-grow: 1;
   transition: flex-grow 0.3s ease;
+  margin-left: 80px;
 }
