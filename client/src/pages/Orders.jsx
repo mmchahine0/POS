@@ -355,6 +355,7 @@ const Orders = () => {
               />
               Print Invoice
             </label>
+            <button onClick={handleClosePopup}>Delete Order</button>
           </div>
         </div>
       )}

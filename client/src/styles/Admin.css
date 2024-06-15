@@ -5,3 +5,70 @@
   background-color: rgb(221, 221, 221);
   min-height: 100vh;
 }
+.container-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-left: 95px;
+  margin-right: 20px;
+  margin-top: 60px;
+
+}
+
+.admin-features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.category-management, .product-management, .user-management, .tax-management {
+  background-color: white;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  min-width: 300px;
+}
+
+.h2-admin {
+  margin-bottom: 15px;
+}
+
+.input-admin {
+  display: block;
+  margin: 10px 0;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.button-admin {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-admin:hover {
+  background-color: #0056b3;
+}
+
+.ul-admin {
+  list-style: none;
+  padding: 0;
+}
+
+.ul-admin, .li-admin {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ul-admin, .li-admin, .input-admin {
+  margin-right: 10px;
+  flex: 1;
+}
