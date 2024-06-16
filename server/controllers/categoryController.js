@@ -13,7 +13,10 @@ exports.createCategory = async (req, res) => {
         .status(400)
         .json({ message: "Category name is already exist" });
 
-    const newCategory = await Category.create({ name });
+    const newCategory = await Category.create({
+      name,
+      image: req.file ? req.file.filename : "default.png",
+    });
 
     return res
       .status(200)
@@ -54,10 +57,25 @@ exports.updateCategory = async (req, res) => {
   const { id } = req.params;
   try {
     const category = await Category.findById(id);
-    if (category)
+    if (!category)
       return res.status(400).json({ message: "Category not found" });
 
-    const updatedCategory = await Category.findByIdAndUpdate(id, { name });
+    const check = await Category.findOne({ name });
+    if (check)
+      return res
+        .status(400)
+        .json({ message: "Category name is already exist" });
+
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      {
+        name,
+        image: req.file ? req.file.filename : category.image,
+      },
+      {
+        new: true,
+      }
+    );
 
     return res.status(200).json({
       message: "Category updated successfully",
