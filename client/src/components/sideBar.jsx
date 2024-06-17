@@ -58,17 +58,17 @@ const Sidebar = () => {
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/productsManage" ? "selected" : ""
+            location.pathname === "/categoriesManage" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/productsManage")}
+          onClick={() => handleIconClick("/categoriesManage")}
         >
           <FontAwesomeIcon icon={faSquarePollVertical} />
         </div>
         <div
           className={`sidebar-icon ${
-            location.pathname === "/categoriesManage" ? "selected" : ""
+            location.pathname === "/productsManage" ? "selected" : ""
           }`}
-          onClick={() => handleIconClick("/categoriesManage")}
+          onClick={() => handleIconClick("/productsManage")}
         >
           <FontAwesomeIcon icon={faNewspaper} />
         </div>

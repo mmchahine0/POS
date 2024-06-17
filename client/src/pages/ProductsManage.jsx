@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
 import dummyProducts from "../dummyDb/allProducts";
-import TaxManagement from "../components/TaxManagement ";
 import "../styles/Admin.css";
 
 const ProductsManage = () => {
@@ -20,7 +19,7 @@ const ProductsManage = () => {
   const [weeklyAvailability, setWeeklyAvailability] = useState([]);
   const [image, setImage] = useState("default.png");
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
+  const [productsPerPage] = useState(9);
 
   useEffect(() => {
     if (selectedProduct) {
@@ -116,7 +115,7 @@ const ProductsManage = () => {
   );
 
   const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(products.length / productsPerPage); i++) {
+  for (let i = 1; i <= products.length / productsPerPage; i++) {
     pageNumbers.push(i);
   }
 
@@ -302,6 +301,7 @@ const ProductsManage = () => {
           <div className="modal-content">
             <form onSubmit={handleTaxUpdate}>
               <h2 className="h2-admin">Manage Tax Rate</h2>
+              <label>Current Tax Rate: {}</label>
               <input
                 className="input-admin"
                 type="number"

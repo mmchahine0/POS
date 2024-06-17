@@ -1,4 +1,4 @@
-export const categories = [
+const categories = [
   { id: 1, icon: 'breakfast', name: 'Breakfast', stock: 10 },
   { id: 2, icon: 'lunch', name: 'Lunch', stock: 20 },
   { id: 3, icon: 'dinner', name: 'Dinner', stock: 15 },
@@ -8,3 +8,4 @@ export const categories = [
   { id: 7, icon: 'appetizer', name: 'Appetizer', stock: 25 },
   { id: 8, icon: 'beverages', name: 'Beverages', stock: 18 },
 ];
+export default categories
