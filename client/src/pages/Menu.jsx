@@ -10,7 +10,7 @@ import {
   faCoffee,
 } from "@fortawesome/free-solid-svg-icons";
 import Categories from "../components/categories";
-import { categories } from "../dummyDb/categoriesDB";
+import categories from "../dummyDb/categoriesDB";
 import { Product } from "../components/Product";
 import Invoice from "../components/Invoice";
 import { addToInvoice, removeFromInvoice } from "../utils/invoiceUtils";

@@ -1,7 +1,8 @@
 import React from "react";
 import { useState } from "react";
-import getUser from "../dummyDb/users";
+import users from "../dummyDb/users";
 import "../styles/Login.css";
+import { Navigate } from "react-router-dom";
 //import axios from 'axios';
 
 const Login = () => {
@@ -9,22 +10,15 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
-    setError("");
-    e.preventDefault();
-    if (!username || !password) {
-      return setError("All fileds are required");
-    }
-    const response = getUser(username, password);
-    response
-      .then((user) => {
-        console.log(user);
-        localStorage.setItem("user", JSON.stringify(user));
-        window.location.href = "/menu";
-      })
-      .catch((err) => {
-        setError(err);
-      });
+  const getUser = () => {
+    const user = {
+      id: 2,
+      name: "Jane Doe",
+      username: "jane",
+      password: "jane123",
+    };
+    localStorage.setItem("user", JSON.stringify(user));
+    window.location.href = "/menu";
   };
   /* const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,7 +41,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <h1>Login</h1>
-      <form className="form-container" onSubmit={handleSubmit}>
+      <form className="form-container" onSubmit={getUser(username, password)}>
         <label htmlFor="username">Username</label>
         <input
           type="text"
