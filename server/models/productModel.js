@@ -8,31 +8,36 @@ const productSchema = new Schema(
       unique: true,
       required: true,
     },
-    // adjective: {
-    //   type: String,
-    //   required: true,
-    // },
     description: {
       type: String,
       required: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
     },
-    // image: {
-    //   type: String,
-    //   required: [true, "Product image is required"],
-    // },
+    quantity: {
+      type: Number,
+      default: 0,
+    },
     category: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "Category",
     },
-    // category: {
-    //   type: String,
-    //   required: true,
-    // },
+    isavailable: {
+      type: Boolean,
+      default: true,
+    },
+    weeklyAvailability: {
+      type: [String],
+      default: [],
+    },
+    image: {
+      type: String,
+      required: [true, "Product image is required"],
+      default: "default.png",
+    },
   },
   { timestamps: true }
 );

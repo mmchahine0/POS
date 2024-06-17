@@ -5,10 +5,12 @@ const app = express();
 const userRoutes = require("./routes/userRoute");
 const productRoutes = require("./routes/productRoute");
 const categoryRoutes = require("./routes/categoryRoute");
+const orderRoutes = require("./routes/orderRoute");
 
 DB();
 
 app.use(express.json());
+app.use(express.static("uploads"));
 
 port = process.env.PORT || 4050;
 app.listen(port, () => {
@@ -19,3 +21,4 @@ app.listen(port, () => {
 app.use("/user", userRoutes);
 app.use("/product", productRoutes);
 app.use("/category", categoryRoutes);
+app.use("/order", orderRoutes);
