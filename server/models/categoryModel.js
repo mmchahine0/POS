@@ -7,9 +7,10 @@ const categorySchema = new Schema(
       type: String,
       required: true,
     },
-    image: {
+    icon: {
       type: String,
       required: true,
+      enum: ['breakfast', 'lunch', 'dinner', 'soup', 'desserts', 'sideDish', 'appetizer', 'beverages'],
     },
   },
   { timestamps: true }

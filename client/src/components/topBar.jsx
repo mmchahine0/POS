@@ -6,6 +6,7 @@ import "../styles/topBar.css";
 const TopBar = ({ searchQuery, onSearchChange, onSearchFocus }) => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) window.location.href = "/login";
+  // const userpfp = user.img;
   return (
     <div className="top-bar">
       <div className="search-container">
@@ -23,13 +24,13 @@ const TopBar = ({ searchQuery, onSearchChange, onSearchFocus }) => {
       </div>
       <div className="profile-container">
         <img
-          src="https://picsum.photos/200/200"
+          src="" //todo
           alt="Profile"
           className="profile-img"
         />
         <div className="profile-info">
           <div className="profile-name">{user.username}</div>
-          <div className="profile-description">Admin</div>
+          <div className="profile-description">{user.role}</div>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ const Categories = ({ icon, name, stock, selected }) => {
       <FontAwesomeIcon icon={icon} className="icon" />
       <div>
         <div className="cat-name">{name}</div>
-        <div className="cat-stock">{stock} Menu in Stock</div>
+        {stock && <div className="cat-stock">{stock} Menu in Stock</div>}
       </div>
     </button>
   );

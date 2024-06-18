@@ -6,9 +6,15 @@ import {
   faPlus,
   faMinus,
 } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 import "../styles/invoice.css";
 
-const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
+const Invoice = ({
+  selectedProducts,
+  addToInvoice,
+  removeFromInvoice,
+  userId,
+}) => {
   const [paymentOption, setPaymentOption] = useState("");
   const [showPayLaterPopup, setShowPayLaterPopup] = useState(false);
   const [showCheckOutPopup, setShowCheckOutPopup] = useState(false);
@@ -16,6 +22,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
   const [customerPhone, setCustomerPhone] = useState("");
   const [dateTime, setDateTime] = useState("");
   const [printInvoice, setPrintInvoice] = useState(false);
+  const user = userId;
 
   const handlePaymentOptionChange = (option) => {
     setPaymentOption(option);
@@ -24,15 +31,10 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
   const handlePlaceOrder = () => {
     if (paymentOption === "Paylater") {
       setShowPayLaterPopup(true);
-    }
-    if (paymentOption === "Cash Payment") {
+    } else if (paymentOption === "Cash Payment") {
       setShowCheckOutPopup(true);
     } else {
-      // Handle Cash Payment Order
-      console.log("Checkout order with details:", {
-        totalAmount: (calculateTotal() * 1.1).toFixed(2),
-        printInvoice,
-      });
+      console.error("Invalid payment option selected.");
     }
   };
 
@@ -41,28 +43,63 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
     setShowCheckOutPopup(false);
   };
 
-  const handleCheckout = () => {
-    // Handle the checkout process for Pay Later
-    console.log("Checkout order with details:", {
-      customerName,
-      customerPhone,
-      dateTime,
-      totalAmount: (calculateTotal() * 1.1).toFixed(2),
-      printInvoice,
-    });
-    // Close the popup
-    handleClosePopup();
+  const handleCheckoutPayLater = async () => {
+    try {
+      const orderData = {
+        userId: user,
+        orderItems: selectedProducts.map((product) => ({
+          product: product._id,
+          amount: product.quantity,
+          price: product.price * product.quantity,
+        })),
+        paymentMethod: "Pay Later",
+        customerInfo: {
+          name: customerName,
+          phoneNumber: customerPhone,
+        },
+        status: "Pending",
+        taxPrice: calculateTotal() * 0.1,
+        isPaid: false,
+      };
+
+      await axios.post("http://127.0.0.1:4000/order/create", orderData);
+      handleClosePopup();
+    } catch (error) {
+      console.error(
+        "Error creating Pay Later order:",
+        error.response?.data || error.message
+      );
+    }
   };
 
-  const handleCheckoutCash = () => {
-    // Handle the checkout process for Cash Payment
-    console.log("Checkout order with details:", {
-      customerName,
-      totalAmount: (calculateTotal() * 1.1).toFixed(2),
-      printInvoice,
-    });
-    // Close the popup
-    handleClosePopup();
+  const handleCheckoutCash = async () => {
+    try {
+      const orderData = {
+        userId: user,
+        orderItems: selectedProducts.map((product) => ({
+          product: product._id,
+          amount: product.quantity,
+          price: product.price * product.quantity,
+        })),
+        paymentMethod: "Cash Payment",
+        customerInfo: {
+          name: customerName,
+          phoneNumber: null,
+        },
+        status: "Completed",
+        taxPrice: calculateTotal() * 0.1,
+        isPaid: true,
+      };
+
+      await axios.post("http://127.0.0.1:4000/order/create", orderData);
+
+      handleClosePopup();
+    } catch (error) {
+      console.error(
+        "Error during Cash Payment checkout:",
+        error.response ? error.response.data : error.message
+      );
+    }
   };
 
   const calculateTotal = () => {
@@ -78,7 +115,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
         <div className="invoice-products-container">
           <h2>Invoice</h2>
           {selectedProducts.map((product) => (
-            <div key={product.id} className="invoice-product">
+            <div key={product._id} className="invoice-product">
               <img src={product.img} alt={product.name} />
               <div className="invoice-product-details">
                 <div className="invoice-product-info">
@@ -209,7 +246,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
               <h4>Selected Items</h4>
               {selectedProducts.map((product) => (
                 <div
-                  key={product.id}
+                  key={product._id}
                   className="invoice-product"
                   style={{
                     marginTop: "-10px",
@@ -245,7 +282,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
                 Print Invoice
               </label>
             </div>
-            <button onClick={handleCheckout}>Checkout Order</button>
+            <button onClick={handleCheckoutPayLater}>Checkout Order</button>
           </div>
         </div>
       )}
@@ -255,7 +292,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
             <span className="close" onClick={handleClosePopup}>
               &times;
             </span>
-            <h3>Cash payment Order Details</h3>
+            <h3>Cash Payment Order Details</h3>
             <div>
               <label>Customer Name:</label>
               <input
@@ -268,7 +305,7 @@ const Invoice = ({ selectedProducts, addToInvoice, removeFromInvoice }) => {
               <h4>Selected Items</h4>
               {selectedProducts.map((product) => (
                 <div
-                  key={product.id}
+                  key={product._id}
                   className="invoice-product"
                   style={{
                     marginTop: "-10px",

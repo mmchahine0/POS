@@ -1,17 +1,21 @@
-import React from 'react';
-import '../styles/products.css';
-import { useState, useEffect } from 'react';
+import React from "react";
+import "../styles/products.css";
+import { useState, useEffect } from "react";
 
-
-export const Product = ({ product, quantity, addToInvoice, removeFromInvoice }) => {
-    const [id, setId] = useState("add");
-    useEffect(() => {
-        if (quantity === 0) {
-            setId("add");
-        } else {
-            setId("added");
-        }
-    }, [quantity]);
+export const Product = ({
+  product,
+  quantity,
+  addToInvoice,
+  removeFromInvoice,
+}) => {
+  const [id, setId] = useState("add");
+  useEffect(() => {
+    if (quantity === 0) {
+      setId("add");
+    } else {
+      setId("added");
+    }
+  }, [quantity]);
   return (
     <div className="product">
       <div className="main">
@@ -22,17 +26,21 @@ export const Product = ({ product, quantity, addToInvoice, removeFromInvoice }) 
         </div>
       </div>
       <div className="price-quantity">
-        <p>$<span>{product.price}</span></p>
+        <p>
+          $<span>{product.price}</span>
+        </p>
         <div className="actions">
-
-          <button id='remove' onClick={removeFromInvoice}>-</button>
+          <button id="remove" onClick={removeFromInvoice}>
+            -
+          </button>
           <span>{quantity}</span>
-          <button id={id} onClick={addToInvoice}>+</button>
+          <button id={id} onClick={addToInvoice}>
+            +
+          </button>
         </div>
       </div>
     </div>
   );
 };
-
 
 export default Product;
