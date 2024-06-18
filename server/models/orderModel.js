@@ -22,7 +22,7 @@ const orderSchema = mongoose.Schema(
     paymentMethod: {
       type: String,
       // required: true,
-      enum: ["Paid", "Pay Later"], // paid , pay later , Cash Payment
+      enum: ["Paid", "Pay Later", "Cash Payment"], // paid , pay later , Cash Payment
     },
     customerInfo: {
       name: { type: String },

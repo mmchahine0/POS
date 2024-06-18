@@ -88,7 +88,7 @@ exports.createOrder = async (req, res) => {
         };
       })
     );
-    if (paymentMethod == "Paid") {
+    if (paymentMethod == "Cash Payment") {
       order = await Order.create({
         user: userId,
         orderItems: detailedOrderItems,

@@ -9,8 +9,8 @@ import {
   faAppleAlt,
   faCoffee,
 } from "@fortawesome/free-solid-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import Categories from "../components/categories";
-import categories from "../dummyDb/categoriesDB";
 import { Product } from "../components/Product";
 import Invoice from "../components/Invoice";
 import { addToInvoice, removeFromInvoice } from "../utils/invoiceUtils";
@@ -18,13 +18,23 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper/modules";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
-import allProducts from "../dummyDb/allProducts";
+import axios from "axios";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css";
 import "../styles/menu.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
+library.add(
+  faBreadSlice,
+  faHamburger,
+  faUtensils,
+  faBowlFood,
+  faIceCream,
+  faDrumstickBite,
+  faAppleAlt,
+  faCoffee
+);
 const iconMapping = {
   breakfast: faBreadSlice,
   lunch: faHamburger,
@@ -37,18 +47,54 @@ const iconMapping = {
 };
 
 const Menu = () => {
-  const [category, setCategory] = useState(categories[0].id);
+  const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const userId = localStorage.getItem("userId");
 
-  const getProducts = (category_id) => {
-    if (category_id) {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:4000/category/getAll"
+        );
+        const categoriesArray = response.data.data.map((cat) => ({
+          ...cat,
+          icon: cat.icon,
+        }));
+        setCategories(categoriesArray);
+      } catch (error) {
+        console.error("Error fetching Categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:4000/product/getAll"
+        );
+        const ProductsArray = response.data.data;
+        setAllProducts(ProductsArray);
+      } catch (error) {
+        console.error("Error fetching Products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const getProducts = (categoryId) => {
+    if (categoryId) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           const filteredProducts = allProducts.filter(
-            (product) => product.category_id === category_id
+            (product) => product.category._id === categoryId
           );
           resolve(filteredProducts);
         }, 10);
@@ -67,7 +113,6 @@ const Menu = () => {
       .then((newProducts) => {
         const paginated = [];
         for (let i = 0; i < newProducts.length; i += 12) {
-          console.log(newProducts);
           paginated.push(newProducts.slice(i, i + 12));
         }
         setProducts(paginated);
@@ -116,9 +161,8 @@ const Menu = () => {
       .catch((error) => {
         console.error("Error fetching products:", error);
         setLoading(false);
-      });
+      }); // eslint-disable-next-line
   }, [category]);
-
   return (
     <div className="screen-container">
       <Sidebar />
@@ -130,16 +174,17 @@ const Menu = () => {
       <div className="categories-products-container">
         <div className="categories-container">
           {categories.map((cat) => (
-            <div key={cat.id} onClick={() => setCategory(cat.id)}>
+            <div key={cat._id} onClick={() => setCategory(cat._id)}>
               <Categories
-                icon={iconMapping[cat.icon]}
+                icon={iconMapping[cat.icon] || faBreadSlice}
                 name={cat.name}
                 stock={cat.stock}
-                selected={category === cat.id}
+                selected={category === cat._id}
               />
             </div>
           ))}
         </div>
+
         <h1 style={{ paddingLeft: "60px", paddingTop: "20px" }}>Menu</h1>
         {loading ? (
           <div className="products-container"></div>
@@ -166,10 +211,10 @@ const Menu = () => {
                     <div className="products-container">
                       {productArray.map((product) => (
                         <Product
-                          key={product.id}
+                          key={product._id}
                           product={product}
                           quantity={
-                            selectedProducts.find((p) => p.id === product.id)
+                            selectedProducts.find((p) => p._id === product._id)
                               ?.quantity || 0
                           }
                           addToInvoice={() => handleAddToInvoice(product)}
@@ -192,6 +237,7 @@ const Menu = () => {
             selectedProducts={selectedProducts}
             addToInvoice={handleAddToInvoice}
             removeFromInvoice={handleRemoveFromInvoice}
+            userId={userId}
           />
         </div>
       )}
