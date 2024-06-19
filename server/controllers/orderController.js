@@ -15,6 +15,24 @@ exports.getAllOrders = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+exports.getOrderById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id)
+      .populate("user", "username role")
+      .populate({
+        path: "orderItems.product",
+        select: "name price description",
+      });
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    return res
+      .status(200)
+      .json({ message: "Order fetched successfully", data: order });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
 
 // exports.createOrder = async (req, res) => {
 //   try {
