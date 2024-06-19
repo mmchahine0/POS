@@ -15,6 +15,24 @@ exports.getAllOrders = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+exports.getOrderById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id)
+      .populate("user", "username role")
+      .populate({
+        path: "orderItems.product",
+        select: "name price description",
+      });
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    return res
+      .status(200)
+      .json({ message: "Order fetched successfully", data: order });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
 
 // exports.createOrder = async (req, res) => {
 //   try {
@@ -52,8 +70,8 @@ exports.getAllOrders = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
   let order,
-    detailedOrderItems = [],
-    orderTotalPrice = 0;
+    detailedOrderItems = [];
+  // orderTotalPrice = 0;
   try {
     const {
       userId,
@@ -62,7 +80,9 @@ exports.createOrder = async (req, res) => {
       customerInfo,
       status,
       taxPrice,
+      totalPrice,
       isPaid,
+      paidAt,
     } = req.body;
 
     detailedOrderItems = await Promise.all(
@@ -80,7 +100,7 @@ exports.createOrder = async (req, res) => {
         // product.quanity -= amount;
         // await product.save();
 
-        orderTotalPrice += totalPrice;
+        // orderTotalPrice += totalPrice;
         return {
           product: item.product,
           amount: amount,
@@ -96,9 +116,9 @@ exports.createOrder = async (req, res) => {
         customerInfo,
         status: "Completed",
         taxPrice,
-        totalPrice: orderTotalPrice,
+        totalPrice,
         isPaid: true,
-        paidAt: Date.now(),
+        paidAt,
       });
     } else if (paymentMethod == "Pay Later") {
       order = await Order.create({
@@ -108,9 +128,9 @@ exports.createOrder = async (req, res) => {
         customerInfo,
         status: "Pending",
         taxPrice,
-        totalPrice: orderTotalPrice * taxPrice,
+        totalPrice,
         // isPaid: false,
-        // paidAt: Date.now(),
+        paidAt,
       });
     }
     return res
@@ -123,8 +143,8 @@ exports.createOrder = async (req, res) => {
 
 exports.updateOrder = async (req, res) => {
   const { id } = req.params;
-  let detailedOrderItems = [],
-    orderTotalPrice = 0;
+  let detailedOrderItems = [];
+  // orderTotalPrice = 0;
   try {
     const {
       orderItems,
@@ -153,7 +173,7 @@ exports.updateOrder = async (req, res) => {
           // product.quanity -= amount;
           // await product.save();
 
-          orderTotalPrice += totalPrice;
+          // orderTotalPrice += totalPrice;
           return {
             product: item.product,
             amount: amount,
@@ -171,7 +191,7 @@ exports.updateOrder = async (req, res) => {
         customerInfo,
         taxPrice,
         status,
-        totalPrice: orderTotalPrice,
+        // totalPrice: orderTotalPrice,
         isPaid,
       },
       { new: true }

@@ -6,12 +6,13 @@ const {
   createOrder,
   updateOrder,
   checkoutOrder,
+  getOrderById,
 } = require("../controllers/orderController");
 
 router.post("/create", createOrder);
 router.get("/getAll", getAllOrders);
+router.get("/getOne/:id", getOrderById);
 router.patch("/update/:id", updateOrder);
 router.patch("/checkout/:id", checkoutOrder);
-// router.delete("/delete/:id", deleteCategory);
 
 module.exports = router;
