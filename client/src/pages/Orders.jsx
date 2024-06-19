@@ -64,17 +64,17 @@ const Orders = () => {
   }, [searchQuery, selectedType]);
 
   // Filtering and searching logic
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearchQuery = order.customerInfo.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+  const filteredOrders = orders.filter((item) => {
+    const matchesSearchQuery =
+      item.customerInfo &&
+      item.customerInfo.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType =
-      selectedType === "All Orders" || order.status === selectedType;
+      selectedType === "All Orders" || item.status === selectedType;
     const matchesDateRange =
       !startDate ||
       !endDate ||
-      (new Date(order.createdAt) >= startDate &&
-        new Date(order.createdAt) <= endDate);
+      (new Date(item.createdAt) >= startDate &&
+        new Date(item.createdAt) <= endDate);
     return matchesSearchQuery && matchesType && matchesDateRange;
   });
 
@@ -123,9 +123,10 @@ const Orders = () => {
     setOrder(orderId);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:4000/order/${orderId}`
+        `http://127.0.0.1:4000/order/getOne/${orderId}`
       );
       setOrderDetails(response.data.data);
+      console.log(response.data.data);
       setShowInvoicePopup(true);
     } catch (error) {
       console.error("Error fetching order details:", error);
@@ -151,27 +152,25 @@ const Orders = () => {
   };
 
   const handleCancel = async () => {
-    const id = order;
-    try {
-      const response = await axios.patch(
-        `http://127.0.0.1:4000/order/cancel/${id}`
-      );
-      const updatedOrder = response.data.data;
-
-      setOrders((prevOrders) =>
-        prevOrders.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
-      );
-
-      handleClosePopup();
-    } catch (error) {
-      console.error("Error checking out the order:", error);
-    }
+    // const id = order;
+    // try {
+    //   const response = await axios.patch(
+    //     `http://127.0.0.1:4000/order/cancel/${id}`
+    //   );
+    //   const updatedOrder = response.data.data;
+    //   setOrders((prevOrders) =>
+    //     prevOrders.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
+    //   );
+    handleClosePopup();
+    // } catch (error) {
+    //   console.error("Error checking out the order:", error);
+    // }
   };
 
   const csvData = orders.map((order) => ({
     orderId: order._id,
     dateOrdered: new Date(order.createdAt).toLocaleDateString(),
-    customer: order.customerInfo.name,
+    customer: order.customerInfo ? order.customerInfo.name : "N/A",
     payment: order.isPaid ? "Paid" : "Paylater",
     status: order.status.charAt(0).toUpperCase() + order.status.slice(1), // Capitalize first letter
     price: `$${order.totalPrice.toFixed(2)}`,
@@ -299,7 +298,9 @@ const Orders = () => {
                   <tr key={order._id}>
                     <td>{order._id}</td>
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td>{order.customerInfo.name}</td>
+                    <td>
+                      {order.customerInfo ? order.customerInfo.name : "N/A"}
+                    </td>
                     <td style={paymentStyle}>
                       {order.isPaid ? "Paid" || "Cash Payment" : "Paylater"}
                     </td>
@@ -382,12 +383,16 @@ const Orders = () => {
               &times;
             </span>
             <h2>Invoice of Order: {orderDetails._id}</h2>
-            <p>
+            <p className="p-order">
               Date Ordered:{" "}
               {new Date(orderDetails.createdAt).toLocaleDateString()}
             </p>
-            <p>Customer: {orderDetails.customerInfo.name}</p>
-            <p>Phone Number: {orderDetails.customerInfo.phoneNumber}</p>
+            <p className="p-order">
+              Customer: {orderDetails.customerInfo.name}
+            </p>
+            <p className="p-order">
+              Phone Number: {orderDetails.customerInfo.phoneNumber}
+            </p>
             <table>
               <thead>
                 <tr>
@@ -406,17 +411,11 @@ const Orders = () => {
                 ))}
               </tbody>
             </table>
-            <p>Total Price: ${orderDetails.totalPrice.toFixed(2)}</p>
-            <label>
-              <input
-                type="checkbox"
-                checked={printInvoice}
-                onChange={() => setPrintInvoice(!printInvoice)}
-                style={{ margin: "10px" }}
-              />
-              Print Invoice
-            </label>
+            <p className="p-order">
+              Total Price: ${orderDetails.totalPrice.toFixed(2)}
+            </p>
             <button onClick={handleClosePopup}>Close</button>
+            <button onClick={handleClosePopup}>Print</button>
           </div>
         </div>
       )}
