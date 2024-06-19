@@ -1,8 +1,7 @@
 const express = require("express");
 const DB = require("./database").connectDB;
 const app = express();
-const cors = require('cors');
-
+const cors = require("cors");
 
 const userRoutes = require("./routes/userRoute");
 const productRoutes = require("./routes/productRoute");
@@ -19,10 +18,12 @@ app.listen(port, () => {
   console.log(`listening on port: ${port}`);
 });
 
-app.use(cors({
-  origin: ['http://localhost:3000'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  })
+);
 
 // routes
 app.use("/user", userRoutes);
