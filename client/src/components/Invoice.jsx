@@ -46,7 +46,7 @@ const Invoice = ({
   const handleCheckoutPayLater = async () => {
     try {
       const orderData = {
-        userId: user,
+        user: user,
         orderItems: selectedProducts.map((product) => ({
           product: product._id,
           amount: product.quantity,
@@ -59,6 +59,7 @@ const Invoice = ({
         },
         status: "Pending",
         taxPrice: calculateTotal() * 0.1,
+        totalPrice: calculateTotal() * 1.1,
         isPaid: false,
       };
 
@@ -75,7 +76,7 @@ const Invoice = ({
   const handleCheckoutCash = async () => {
     try {
       const orderData = {
-        userId: user,
+        user: user,
         orderItems: selectedProducts.map((product) => ({
           product: product._id,
           amount: product.quantity,
@@ -88,11 +89,12 @@ const Invoice = ({
         },
         status: "Completed",
         taxPrice: calculateTotal() * 0.1,
+        totalPrice: calculateTotal() * 1.1,
         isPaid: true,
+        paidAt: new Date(),
       };
 
       await axios.post("http://127.0.0.1:4000/order/create", orderData);
-
       handleClosePopup();
     } catch (error) {
       console.error(

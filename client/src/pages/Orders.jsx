@@ -10,19 +10,10 @@ import {
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
 import DatePicker from "react-datepicker";
+import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import "../styles/Orders.css";
 import { CSVLink } from "react-csv";
-
-// Dummy data
-const dummyOrders = Array.from({ length: 40 }, (_, index) => ({
-  _id: `order${index + 1}`,
-  createdAt: new Date(2023, 5, index + 1).toISOString(),
-  customerInfo: { name: `Customer ${index + 1}` },
-  isPaid: index % 2 === 0,
-  status: ["pending", "new", "completed", "canceled"][index % 4],
-  totalPrice: (index + 1) * 100,
-}));
 
 const Orders = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,6 +33,20 @@ const Orders = () => {
   const [showInvoicePopup, setShowInvoicePopup] = useState(false);
   const [order, setOrder] = useState("");
   const [printInvoice, setPrintInvoice] = useState(false);
+  const [orderDetails, setOrderDetails] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:4000/order/getAll");
+        const ordersArray = response.data.data;
+        setOrders(ordersArray);
+      } catch (error) {
+        console.error("Error fetching Categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleResetDates = () => {
     setStartDate(null);
@@ -54,11 +59,6 @@ const Orders = () => {
   };
 
   useEffect(() => {
-    // Initially load orders
-    setOrders(dummyOrders);
-  }, []);
-
-  useEffect(() => {
     // Reset to page 1 whenever search query or selected type changes
     setCurrentPage(1);
   }, [searchQuery, selectedType]);
@@ -69,8 +69,7 @@ const Orders = () => {
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesType =
-      selectedType === "All Orders" ||
-      order.status === selectedType.toLowerCase();
+      selectedType === "All Orders" || order.status === selectedType;
     const matchesDateRange =
       !startDate ||
       !endDate ||
@@ -119,20 +118,57 @@ const Orders = () => {
     setOrder(orderId);
     setShowCheckConfirmationPopup(true);
   };
-  const handlePrintOrder = (orderId) => {
+
+  const handlePrintOrder = async (orderId) => {
     setOrder(orderId);
-    setShowInvoicePopup(true);
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:4000/order/${orderId}`
+      );
+      setOrderDetails(response.data.data);
+      setShowInvoicePopup(true);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+    }
   };
-  const handleCheckout = () => {
-    // Handle the checkout process for Cash Payment
-    handleClosePopup();
+
+  const handleCheckout = async () => {
+    const id = order;
+    try {
+      const response = await axios.patch(
+        `http://127.0.0.1:4000/order/checkout/${id}`
+      );
+      const updatedOrder = response.data.data;
+
+      setOrders((prevOrders) =>
+        prevOrders.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
+      );
+
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error checking out the order:", error);
+    }
   };
-  const handleCancel = () => {
-    // Handle the checkout process for Cash Payment
-    // Close the popup
-    handleClosePopup();
+
+  const handleCancel = async () => {
+    const id = order;
+    try {
+      const response = await axios.patch(
+        `http://127.0.0.1:4000/order/cancel/${id}`
+      );
+      const updatedOrder = response.data.data;
+
+      setOrders((prevOrders) =>
+        prevOrders.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
+      );
+
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error checking out the order:", error);
+    }
   };
-  const csvData = dummyOrders.map((order) => ({
+
+  const csvData = orders.map((order) => ({
     orderId: order._id,
     dateOrdered: new Date(order.createdAt).toLocaleDateString(),
     customer: order.customerInfo.name,
@@ -245,16 +281,16 @@ const Orders = () => {
                   textAlign: "center",
                   padding: "5px 10px",
                 };
-                if (order.status === "pending") {
+                if (order.status === "Pending") {
                   statusStyle.color = "orange";
                   statusStyle.backgroundColor = "rgba(255, 165, 0, 0.1)";
-                } else if (order.status === "new") {
+                } else if (order.status === "New") {
                   statusStyle.color = "purple";
                   statusStyle.backgroundColor = "rgba(0, 0, 255, 0.1)";
-                } else if (order.status === "completed") {
+                } else if (order.status === "Completed") {
                   statusStyle.color = "green";
                   statusStyle.backgroundColor = "rgba(0, 128, 0, 0.1)";
-                } else if (order.status === "canceled") {
+                } else if (order.status === "Canceled") {
                   statusStyle.color = "red";
                   statusStyle.backgroundColor = "rgba(255, 0, 0, 0.1)";
                 }
@@ -265,7 +301,7 @@ const Orders = () => {
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td>{order.customerInfo.name}</td>
                     <td style={paymentStyle}>
-                      {order.isPaid ? "Paid" : "Paylater"}
+                      {order.isPaid ? "Paid" || "Cash Payment" : "Paylater"}
                     </td>
                     <td style={statusStyle}>
                       {order.status.charAt(0).toUpperCase() +
@@ -339,13 +375,38 @@ const Orders = () => {
           </div>
         </div>
       )}
-      {showInvoicePopup && (
+      {showInvoicePopup && orderDetails && (
         <div className="popup">
           <div className="popup-content">
             <span className="close" onClick={handleClosePopup}>
               &times;
             </span>
-            <label>invoice of Order: {order}</label>
+            <h2>Invoice of Order: {orderDetails._id}</h2>
+            <p>
+              Date Ordered:{" "}
+              {new Date(orderDetails.createdAt).toLocaleDateString()}
+            </p>
+            <p>Customer: {orderDetails.customerInfo.name}</p>
+            <p>Phone Number: {orderDetails.customerInfo.phoneNumber}</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Amount</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderDetails.orderItems.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.product.name}</td>
+                    <td>{item.amount}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p>Total Price: ${orderDetails.totalPrice.toFixed(2)}</p>
             <label>
               <input
                 type="checkbox"
@@ -355,7 +416,7 @@ const Orders = () => {
               />
               Print Invoice
             </label>
-            <button onClick={handleClosePopup}>Delete Order</button>
+            <button onClick={handleClosePopup}>Close</button>
           </div>
         </div>
       )}
