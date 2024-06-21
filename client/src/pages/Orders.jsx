@@ -316,8 +316,8 @@ const Orders = () => {
                         className="action-icon"
                         onClick={() => handlePrintOrder(order._id)}
                       />
-                      {order.status !== "completed" && (
-                        <div className="action-icons">
+                      {order.status !== "Completed" && (
+                        <>
                           <FontAwesomeIcon
                             icon={faTimesCircle}
                             title="Cancel Order"
@@ -332,7 +332,7 @@ const Orders = () => {
                             style={{ marginLeft: "15px" }}
                             onClick={() => handleCheckoutOrder(order._id)}
                           />
-                        </div>
+                        </>
                       )}
                     </td>
                   </tr>
@@ -360,7 +360,12 @@ const Orders = () => {
             </span>
             <label>Are you sure you want to Checkout {order} ?</label>
             <button onClick={handleCheckout}>Checkout Order</button>
-            <button onClick={handleClosePopup}>Cancel</button>
+            <button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={handleClosePopup}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -372,7 +377,12 @@ const Orders = () => {
             </span>
             <label>Are you sure you want to Delete {order} ?</label>
             <button onClick={handleCancel}>Delete Order</button>
-            <button onClick={handleClosePopup}>Cancel</button>
+            <button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={handleClosePopup}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -414,8 +424,13 @@ const Orders = () => {
             <p className="p-order">
               Total Price: ${orderDetails.totalPrice.toFixed(2)}
             </p>
-            <button onClick={handleClosePopup}>Close</button>
             <button onClick={handleClosePopup}>Print</button>
+            <button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={handleClosePopup}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

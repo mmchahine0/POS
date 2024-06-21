@@ -26,6 +26,13 @@ const Sidebar = () => {
     window.location.href = "/login";
   };
 
+  const isSelected = (path) => {
+    if (location.pathname === "/" && path === "/menu") {
+      return "selected";
+    }
+    return location.pathname === path ? "selected" : "";
+  };
+
   return (
     <div className="sidebar">
       <div className="logo">
@@ -33,49 +40,37 @@ const Sidebar = () => {
       </div>
       <div className="sidebar-icons">
         <div
-          className={`sidebar-icon ${
-            location.pathname === "/menu" ? "selected" : ""
-          }`}
+          className={`sidebar-icon ${isSelected("/menu")}`}
           onClick={() => handleIconClick("/menu")}
         >
           <FontAwesomeIcon icon={faList} />
         </div>
         <div
-          className={`sidebar-icon ${
-            location.pathname === "/orders" ? "selected" : ""
-          }`}
+          className={`sidebar-icon ${isSelected("/orders")}`}
           onClick={() => handleIconClick("/orders")}
         >
           <FontAwesomeIcon icon={faClipboardCheck} />
         </div>
         <div
-          className={`sidebar-icon ${
-            location.pathname === "/usersManage" ? "selected" : ""
-          }`}
+          className={`sidebar-icon ${isSelected("/usersManage")}`}
           onClick={() => handleIconClick("/usersManage")}
         >
           <FontAwesomeIcon icon={faCalendar} />
         </div>
         <div
-          className={`sidebar-icon ${
-            location.pathname === "/categoriesManage" ? "selected" : ""
-          }`}
+          className={`sidebar-icon ${isSelected("/categoriesManage")}`}
           onClick={() => handleIconClick("/categoriesManage")}
         >
           <FontAwesomeIcon icon={faSquarePollVertical} />
         </div>
         <div
-          className={`sidebar-icon ${
-            location.pathname === "/productsManage" ? "selected" : ""
-          }`}
+          className={`sidebar-icon ${isSelected("/productsManage")}`}
           onClick={() => handleIconClick("/productsManage")}
         >
           <FontAwesomeIcon icon={faNewspaper} />
         </div>
         <div
-          className={`sidebar-icon ${
-            location.pathname === "/taxManage" ? "selected" : ""
-          }`}
+          className={`sidebar-icon ${isSelected("/taxManage")}`}
           onClick={() => handleIconClick("/taxManage")}
         >
           <FontAwesomeIcon icon={faComments} />
@@ -83,16 +78,14 @@ const Sidebar = () => {
       </div>
       <div className="sidebar-buttons">
         <div
-          className={`sidebar-icon-down ${
-            location.pathname === "/info" ? "selected" : ""
-          }`}
+          className={`sidebar-icon-down ${isSelected("/info")}`}
           onClick={() => handleIconClick("/info")}
         >
           <span>
             <FontAwesomeIcon icon={faInfo} />
           </span>
         </div>
-        <div className="sidebar-icon-down" onClick={() => handleLogout()}>
+        <div className="sidebar-icon-down" onClick={handleLogout}>
           <span style={{ color: "red" }}>
             <FontAwesomeIcon icon={faRightFromBracket} />
           </span>
