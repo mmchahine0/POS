@@ -1,25 +1,57 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
-import dummyProducts from "../dummyDb/allProducts";
 import "../styles/Admin.css";
 
 const ProductsManage = () => {
-  const [products, setProducts] = useState(dummyProducts);
+  const [products, setProducts] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [showTax, setTaxPopup] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [category, setCategory] = useState("");
-  const [isavailable, setIsAvailable] = useState(true);
+  const [isavailable, setIsAvailable] = useState(false);
   const [weeklyAvailability, setWeeklyAvailability] = useState([]);
-  const [image, setImage] = useState("default.png");
+  const [image, setImage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(9);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [productId, setProductId] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:4000/category/getAll"
+        );
+        const categoriesArray = response.data.data;
+        setCategories(categoriesArray);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:4000/product/getAll");
+      setProducts(response.data.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   useEffect(() => {
     if (selectedProduct) {
@@ -27,27 +59,47 @@ const ProductsManage = () => {
       setDescription(selectedProduct.description);
       setPrice(selectedProduct.price);
       setQuantity(selectedProduct.quantity);
-      setCategory(selectedProduct.category);
+      setCategory(selectedProduct.category._id);
       setIsAvailable(selectedProduct.isavailable);
       setWeeklyAvailability(selectedProduct.weeklyAvailability);
       setImage(selectedProduct.image);
     } else {
-      setName("");
-      setDescription("");
-      setPrice("");
-      setQuantity(0);
-      setCategory("");
-      setIsAvailable(true);
-      setWeeklyAvailability([]);
-      setImage("default.png");
+      resetForm();
     }
   }, [selectedProduct]);
+
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setPrice("");
+    setQuantity("");
+    setCategory("");
+    setIsAvailable(false);
+    setWeeklyAvailability([]);
+    setImage(null);
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      setImage(e.target.files[0]);
+    } else {
+      setImage(null); // Reset image state if no file selected
+    }
+  };
+
+  const handleCategoryChange = (e) => {
+    setCategory(e.target.value);
+  };
 
   const handleOpenPopup = (product) => {
     setSelectedProduct(product);
     setShowPopup(true);
   };
 
+  const handleShowDeleteConfirmation = (product) => {
+    setProductId(product);
+    setShowDeleteConfirmation(true);
+  };
   const handleOpenTaxPopup = () => {
     setTaxPopup(true);
   };
@@ -56,66 +108,86 @@ const ProductsManage = () => {
     setSelectedProduct(null);
     setShowPopup(false);
     setTaxPopup(false);
+    setShowDeleteConfirmation(false);
   };
 
   const handleTaxChange = (e) => {
     setTaxRate(e.target.value);
   };
-  const handleTaxUpdate = () => {};
-  const handleCreateOrUpdate = (event) => {
+
+  const handleCreateOrUpdate = async (event) => {
     event.preventDefault();
-    if (selectedProduct) {
-      // Update product
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("price", Number(price));
+    formData.append("quantity", Number(quantity));
+    formData.append("category", category);
+    formData.append("isavailable", isavailable);
+    formData.append("weeklyAvailability", weeklyAvailability.join(", "));
+    if (image) {
+      formData.append("image", image);
+    }
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+      const response = selectedProduct
+        ? await axios.patch(
+            `http://127.0.0.1:4000/product/update/${selectedProduct._id}`,
+            formData,
+            config
+          )
+        : await axios.post(
+            "http://127.0.0.1:4000/product/create",
+            formData,
+            config
+          );
+
       setProducts(
         products.map((product) =>
-          product.id === selectedProduct.id
-            ? {
-                ...selectedProduct,
-                name,
-                description,
-                price: Number(price),
-                quantity: Number(quantity),
-                category,
-                isavailable,
-                weeklyAvailability,
-                image,
-              }
-            : product
+          product._id === response.data.data._id ? response.data.data : product
         )
       );
-    } else {
-      // Create product
-      setProducts([
-        ...products,
-        {
-          id: products.length + 1,
-          name,
-          description,
-          price: Number(price),
-          quantity: Number(quantity),
-          category,
-          isavailable,
-          weeklyAvailability,
-          image,
-        },
-      ]);
+      fetchProducts();
+      resetForm();
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error creating/updating product:", error);
     }
-    handleClosePopup();
   };
 
-  const handleDelete = (id) => {
-    // setProducts(products.filter((product) => product.id !== id));
+  const handleDelete = async () => {
+    const id = productId;
+    try {
+      await axios.delete(`http://127.0.0.1:4000/product/delete/${id}`);
+      setProducts(products.filter((product) => product._id !== id));
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
   };
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(
+  const currentProducts = filteredProducts.slice(
     indexOfFirstProduct,
     indexOfLastProduct
   );
 
   const pageNumbers = [];
-  for (let i = 1; i <= products.length / productsPerPage; i++) {
+  for (
+    let i = 1;
+    i <= Math.ceil(filteredProducts.length / productsPerPage);
+    i++
+  ) {
     pageNumbers.push(i);
   }
 
@@ -126,7 +198,7 @@ const ProductsManage = () => {
   return (
     <div className="screen-container">
       <Sidebar />
-      <TopBar />
+      <TopBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <div className="container-wrapper">
         <div className="container">
           <button
@@ -138,7 +210,7 @@ const ProductsManage = () => {
           <button
             className="button-admin"
             style={{ marginLeft: "10px" }}
-            onClick={() => handleOpenTaxPopup()}
+            onClick={handleOpenTaxPopup}
           >
             Update Tax
           </button>
@@ -159,21 +231,24 @@ const ProductsManage = () => {
             </thead>
             <tbody>
               {currentProducts.map((product) => (
-                <tr key={product.id}>
-                  <td>{product.id}</td>
+                <tr key={product._id}>
+                  <td className="scrollable-cell">{product._id}</td>
                   <td>{product.name}</td>
-                  <td>{product.description}</td>
-                  <td>{product.price}</td>
+                  <td className="scrollable-cell">{product.description}</td>
+                  <td>{product.price.toFixed(2)}</td>{" "}
                   <td>{product.quantity}</td>
-                  <td>{product.category}</td>
+                  <td>
+                    {product.category ? product.category.name : "No Category"}
+                  </td>
                   <td>{product.isavailable ? "Yes" : "No"}</td>
-                  <td>{product.weeklyAvailability}</td>
+                  <td className="scrollable-cell">
+                    {product.weeklyAvailability.join(" ")}
+                  </td>
                   <td>
                     <img
                       src={product.image}
                       alt={product.name}
-                      width="50"
-                      height="50"
+                      style={{ width: "50px", height: "50px" }}
                     />
                   </td>
                   <td>
@@ -190,7 +265,7 @@ const ProductsManage = () => {
                         backgroundColor: "red",
                         marginLeft: "5px",
                       }}
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleShowDeleteConfirmation(product._id)}
                     >
                       Delete
                     </button>
@@ -249,38 +324,39 @@ const ProductsManage = () => {
                 onChange={(e) => setQuantity(e.target.value)}
                 required
               />
-              <input
-                type="text"
-                placeholder="Category"
+              <select
+                className="select-admin"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={handleCategoryChange}
                 required
-              />
-              <div>
-                <label>
+              >
+                <option value="">Select a Category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <div style={{ marginLeft: "5px", marginBottom: "10px" }}>
+                <label className="p-admin" style={{ marginRight: "5px" }}>
                   Available:
-                  <input
-                    type="checkbox"
-                    checked={isavailable}
-                    onChange={(e) => setIsAvailable(e.target.checked)}
-                  />
                 </label>
+                <input
+                  style={{ marginBottom: "-10px" }}
+                  type="checkbox"
+                  checked={isavailable}
+                  onChange={(e) => setIsAvailable(e.target.checked)}
+                />
               </div>
               <input
                 type="text"
                 placeholder="Weekly Availability"
-                value={weeklyAvailability}
+                value={weeklyAvailability.join(" ")}
                 onChange={(e) =>
-                  setWeeklyAvailability(e.target.value.split(", "))
+                  setWeeklyAvailability(e.target.value.split(" "))
                 }
               />
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                required
-              />
+              <input type="file" onChange={handleImageChange} />
               <button className="button-admin" type="submit">
                 {selectedProduct ? "Update" : "Create"}
               </button>
@@ -299,9 +375,9 @@ const ProductsManage = () => {
       {showTax && (
         <div className="modal">
           <div className="modal-content">
-            <form onSubmit={handleTaxUpdate}>
+            <form>
               <h2 className="h2-admin">Manage Tax Rate</h2>
-              <label>Current Tax Rate: {}</label>
+              <label>Current Tax Rate: {taxRate}</label>
               <input
                 className="input-admin"
                 type="number"
@@ -319,6 +395,23 @@ const ProductsManage = () => {
                 Close
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {showDeleteConfirmation && (
+        <div className="popup">
+          <div className="popup-content">
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
+            <label>Are you sure you want to Delete {productId} ?</label>
+            <button onClick={handleDelete}>Delete Order</button>
+            <button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={handleClosePopup}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

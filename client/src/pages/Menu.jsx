@@ -67,6 +67,7 @@ const Menu = () => {
           icon: cat.icon,
         }));
         setCategories(categoriesArray);
+        setCategory(categoriesArray[0]._id);
       } catch (error) {
         console.error("Error fetching Categories:", error);
       }

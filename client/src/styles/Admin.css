@@ -195,3 +195,36 @@
   border-radius: 5px;
 }
 
+.scrollable-cell {
+  overflow-x: auto;
+  max-width: 50px; 
+  white-space: nowrap;
+}
+
+.scrollable-cell::-webkit-scrollbar {
+  height: 5px;
+}
+
+.scrollable-cell::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.scrollable-cell::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.select-admin {
+  font-size: 16px; 
+  padding: 8px; 
+  width: 200px; 
+  border: 1px solid #ccc;
+  border-radius: 4px; 
+  background-color: #fff; 
+  margin-bottom: 10px ;
+}
+
+
+.select-admin option {
+  font-size: 14px; 
+  background-color: #fff; 
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
 import dummyUsers from "../dummyDb/users";
+import axios from "axios";
 import "../styles/Admin.css";
 
 const UsersManage = () => {
@@ -13,6 +14,21 @@ const UsersManage = () => {
   const [img_url, setImgUrl] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(9);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:4000/user/getAll");
+        const usersArray = response.data.data;
+        setUsers(usersArray);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     if (selectedUser) {
@@ -34,41 +50,66 @@ const UsersManage = () => {
   const handleClosePopup = () => {
     setSelectedUser(null);
     setShowPopup(false);
+    setShowDeleteConfirmation(false);
   };
-
-  const handleCreateOrUpdate = (event) => {
+  const handleShowDeleteConfirmation = (userId) => {
+    setUserId(userId);
+    setShowDeleteConfirmation(true);
+  };
+  const handleCreateOrUpdate = async (event) => {
     event.preventDefault();
+
+    const userData = {
+      username,
+      password,
+      role: "user", // Assuming 'user' role by default, adjust as needed for your use case.
+    };
+
     if (selectedUser) {
       // Update user
-      setUsers(
-        users.map((user) =>
-          user.id === selectedUser.id
-            ? {
-                ...selectedUser,
-                username,
-                password,
-                img_url,
-              }
+      try {
+        const response = await axios.patch(
+          `http://127.0.0.1:4000/user/update/${selectedUser._id}`,
+          userData
+        );
+        const updatedUsers = users.map((user) =>
+          user._id === selectedUser._id
+            ? { ...user, ...response.data.data }
             : user
-        )
-      );
+        );
+        setUsers(updatedUsers);
+        handleClosePopup();
+        alert("User updated successfully");
+      } catch (error) {
+        console.error("Error updating user:", error);
+        alert(error.response?.data?.message || "Failed to update user");
+      }
     } else {
       // Create user
-      setUsers([
-        ...users,
-        {
-          id: users.length + 1,
-          username,
-          password,
-          img_url,
-        },
-      ]);
+      try {
+        const response = await axios.post(
+          "http://127.0.0.1:4000/user/create",
+          userData
+        );
+        setUsers([...users, response.data.data]);
+        handleClosePopup();
+        alert("User created successfully");
+      } catch (error) {
+        console.error("Error creating user:", error);
+        alert(error.response?.data?.message || "Failed to create user");
+      }
     }
-    handleClosePopup();
   };
 
-  const handleDelete = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
+  const handleDelete = async () => {
+    const id = userId;
+    try {
+      await axios.delete(`http://127.0.0.1:4000/user/delete/${id}`);
+      setUsers(users.filter((user) => user._id !== id));
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -111,7 +152,7 @@ const UsersManage = () => {
                 <tr key={user.id}>
                   <td>{user.id}</td>
                   <td>{user.username}</td>
-                  <td>{user.password}</td>
+                  <td className="scrollable-cell">{user.password}</td>
                   <td>
                     <img
                       src={user.img_url}
@@ -134,7 +175,7 @@ const UsersManage = () => {
                         backgroundColor: "red",
                         marginLeft: "5px",
                       }}
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => handleShowDeleteConfirmation(user._id)}
                     >
                       Delete
                     </button>
@@ -198,6 +239,23 @@ const UsersManage = () => {
                 Close
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {showDeleteConfirmation && (
+        <div className="popup">
+          <div className="popup-content">
+            <span className="close" onClick={handleClosePopup}>
+              &times;
+            </span>
+            <label>Are you sure you want to Delete {userId} ?</label>
+            <button onClick={handleDelete}>Delete Order</button>
+            <button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={handleClosePopup}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
