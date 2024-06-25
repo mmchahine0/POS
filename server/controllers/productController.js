@@ -107,7 +107,7 @@ exports.updateProduct = async (req, res) => {
   let newProduct;
   try {
     if (name) {
-      const check = await Product.findOne({ name });
+      const check = await Product.findOne({ name, _id: { $ne: id } });
       if (check)
         return res
           .status(400)
