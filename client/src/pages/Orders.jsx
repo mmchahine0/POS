@@ -126,7 +126,6 @@ const Orders = () => {
         `http://127.0.0.1:4000/order/getOne/${orderId}`
       );
       setOrderDetails(response.data.data);
-      console.log(response.data.data);
       setShowInvoicePopup(true);
     } catch (error) {
       console.error("Error fetching order details:", error);
@@ -397,6 +396,7 @@ const Orders = () => {
               Date Ordered:{" "}
               {new Date(orderDetails.createdAt).toLocaleDateString()}
             </p>
+            <p className="p-order">Created By: {orderDetails.user.username}</p>
             <p className="p-order">
               Customer: {orderDetails.customerInfo.name}
             </p>

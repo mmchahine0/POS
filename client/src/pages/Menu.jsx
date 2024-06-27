@@ -54,8 +54,7 @@ const Menu = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categories, setCategories] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
-  const userId = localStorage.getItem("userId");
-
+  const user = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -105,6 +104,10 @@ const Menu = () => {
         resolve(allProducts);
       });
     }
+  };
+  const resetPage = () => {
+    setSelectedProducts([]);
+    setSearchQuery("");
   };
 
   const handleSearchFocus = () => {
@@ -238,7 +241,8 @@ const Menu = () => {
             selectedProducts={selectedProducts}
             addToInvoice={handleAddToInvoice}
             removeFromInvoice={handleRemoveFromInvoice}
-            userId={userId}
+            user={user}
+            onOrderComplete={resetPage}
           />
         </div>
       )}

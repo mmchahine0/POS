@@ -13,7 +13,8 @@ const Invoice = ({
   selectedProducts,
   addToInvoice,
   removeFromInvoice,
-  userId,
+  user,
+  onOrderComplete,
 }) => {
   const [paymentOption, setPaymentOption] = useState("");
   const [showPayLaterPopup, setShowPayLaterPopup] = useState(false);
@@ -22,7 +23,6 @@ const Invoice = ({
   const [customerPhone, setCustomerPhone] = useState("");
   const [dateTime, setDateTime] = useState("");
   const [printInvoice, setPrintInvoice] = useState(false);
-  const user = userId;
 
   const handlePaymentOptionChange = (option) => {
     setPaymentOption(option);
@@ -46,7 +46,7 @@ const Invoice = ({
   const handleCheckoutPayLater = async () => {
     try {
       const orderData = {
-        user: user,
+        userId: user,
         orderItems: selectedProducts.map((product) => ({
           product: product._id,
           amount: product.quantity,
@@ -65,6 +65,7 @@ const Invoice = ({
 
       await axios.post("http://127.0.0.1:4000/order/create", orderData);
       handleClosePopup();
+      onOrderComplete();
     } catch (error) {
       console.error(
         "Error creating Pay Later order:",
@@ -76,7 +77,7 @@ const Invoice = ({
   const handleCheckoutCash = async () => {
     try {
       const orderData = {
-        user: user,
+        userId: user,
         orderItems: selectedProducts.map((product) => ({
           product: product._id,
           amount: product.quantity,
@@ -96,6 +97,7 @@ const Invoice = ({
 
       await axios.post("http://127.0.0.1:4000/order/create", orderData);
       handleClosePopup();
+      onOrderComplete();
     } catch (error) {
       console.error(
         "Error during Cash Payment checkout:",
@@ -246,29 +248,24 @@ const Invoice = ({
             </div>
             <div className="invoice-products-container">
               <h4>Selected Items</h4>
-              {selectedProducts.map((product) => (
-                <div
-                  key={product._id}
-                  className="invoice-product"
-                  style={{
-                    marginTop: "-10px",
-                    marginBottom: "-10px",
-                    paddingTop: "-10px",
-                    paddingBottom: "-10px",
-                  }}
-                >
-                  <div className="invoice-product-details">
-                    <div className="invoice-product-info">
-                      <h4>{product.name}</h4>
-                      <p>
-                        <span style={{ color: "gray" }}>$</span>
-                        {product.price * product.quantity}
-                      </p>
-                    </div>
-                    <p>{product.quantity}x</p>
-                  </div>
-                </div>
-              ))}
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedProducts.map((product, index) => (
+                    <tr key={index}>
+                      <td>{product.name}</td>
+                      <td>{product.quantity}</td>
+                      <td>${(product.price * product.quantity).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div>
               <p>Total Amount to Pay: ${(calculateTotal() * 1.1).toFixed(2)}</p>
@@ -305,29 +302,24 @@ const Invoice = ({
             </div>
             <div className="invoice-products-container">
               <h4>Selected Items</h4>
-              {selectedProducts.map((product) => (
-                <div
-                  key={product._id}
-                  className="invoice-product"
-                  style={{
-                    marginTop: "-10px",
-                    marginBottom: "-10px",
-                    paddingTop: "-10px",
-                    paddingBottom: "-10px",
-                  }}
-                >
-                  <div className="invoice-product-details">
-                    <div className="invoice-product-info">
-                      <h4>{product.name}</h4>
-                      <p>
-                        <span style={{ color: "gray" }}>$</span>
-                        {product.price * product.quantity}
-                      </p>
-                    </div>
-                    <p>{product.quantity}x</p>
-                  </div>
-                </div>
-              ))}
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedProducts.map((product, index) => (
+                    <tr key={index}>
+                      <td>{product.name}</td>
+                      <td>{product.quantity}</td>
+                      <td>${(product.price * product.quantity).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
             <div>
               <p>Total Amount to Pay: ${(calculateTotal() * 1.1).toFixed(2)}</p>
