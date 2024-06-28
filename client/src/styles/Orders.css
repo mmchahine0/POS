@@ -83,14 +83,17 @@ th, td {
 td{
   font-size: 1.1rem;
   font-weight: 500;
+  margin: 5px 0px;
+  padding: 10px 0px;
+  text-align: center;
 }
 th {
+  font-size: 1.1rem;
+  font-weight: 500;
   cursor: pointer;
-}
-
-th {
-  background-color: #f1f1f1;
-  
+  text-align: center;
+  color: rgb(46, 46, 46);
+  background-color: #fff;
 }
 
 .pagination {
@@ -125,10 +128,12 @@ th {
   transition: background-color 0.3s, color 0.3s;
   margin-right: 30px;
   color:#007bff;
+  
 }
 
 .icons span {
   font-size: 12px;
+  
 }
 
 
@@ -220,17 +225,19 @@ th {
   color: white;
 }
 .action-icons {
-  display: flex;
-  justify-content: space-around;
   font-size: 24px;
   color:#007bff;
   border-bottom-width: 0px;
+  text-align: center;
+  border-bottom: 1px solid;
+  border-color: rgb(221, 221, 221);
 }
 
 .action-icon {
   font-size: 24px;
   color:#007bff;
   cursor: pointer;
+  
 }
 
 .popup {

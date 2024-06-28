@@ -124,7 +124,9 @@ const ProductsManage = () => {
     formData.append("quantity", Number(quantity));
     formData.append("category", category);
     formData.append("isavailable", isavailable);
-    formData.append("weeklyAvailability", weeklyAvailability.join(", "));
+    weeklyAvailability.forEach((day) => {
+      formData.append("weeklyAvailability", day); // Append each day as a separate form data entry
+    });
     if (image) {
       formData.append("image", image);
     }
@@ -152,7 +154,7 @@ const ProductsManage = () => {
           product._id === response.data.data._id ? response.data.data : product
         )
       );
-      fetchProducts();
+      fetchProducts(); // Refresh the list after update
       resetForm();
       handleClosePopup();
     } catch (error) {
@@ -169,6 +171,16 @@ const ProductsManage = () => {
     } catch (error) {
       console.error("Error deleting product:", error);
     }
+  };
+
+  const handleDayChange = (day) => {
+    setWeeklyAvailability((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((d) => d !== day); // Remove the day if it's already included
+      } else {
+        return [...prev, day]; // Add the day if it's not included
+      }
+    });
   };
 
   const filteredProducts = products.filter((product) =>
@@ -194,6 +206,16 @@ const ProductsManage = () => {
   const handleClick = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
   return (
     <div className="screen-container">
@@ -242,7 +264,7 @@ const ProductsManage = () => {
                   </td>
                   <td>{product.isavailable ? "Yes" : "No"}</td>
                   <td className="scrollable-cell">
-                    {product.weeklyAvailability.join(" ")}
+                    {product.weeklyAvailability.join(", ")}
                   </td>
                   <td>
                     <img
@@ -337,25 +359,38 @@ const ProductsManage = () => {
                   </option>
                 ))}
               </select>
-              <div style={{ marginLeft: "5px", marginBottom: "10px" }}>
-                <label className="p-admin" style={{ marginRight: "5px" }}>
+              <div style={{ marginLeft: "5px" }}>
+                <label
+                  className="p-admin"
+                  style={{ marginRight: "5px", marginBottom: "10px" }}
+                >
                   Available:
                 </label>
                 <input
-                  style={{ marginBottom: "-10px" }}
                   type="checkbox"
                   checked={isavailable}
                   onChange={(e) => setIsAvailable(e.target.checked)}
                 />
               </div>
-              <input
-                type="text"
-                placeholder="Weekly Availability"
-                value={weeklyAvailability.join(" ")}
-                onChange={(e) =>
-                  setWeeklyAvailability(e.target.value.split(" "))
-                }
-              />
+              <div style={{ marginBottom: "10px", marginLeft: "5px" }}>
+                <label className="p-admin" style={{ marginRight: "5px" }}>
+                  Weekly Availability:
+                </label>
+                {daysOfWeek.map((day) => (
+                  <div
+                    key={day}
+                    style={{ display: "inline-block", marginRight: "10px" }}
+                  >
+                    <input
+                      style={{ margin: "5px" }}
+                      type="checkbox"
+                      checked={weeklyAvailability.includes(day)}
+                      onChange={() => handleDayChange(day)}
+                    />
+                    <label>{day}</label>
+                  </div>
+                ))}
+              </div>
               <input type="file" onChange={handleImageChange} />
               <button className="button-admin" type="submit">
                 {selectedProduct ? "Update" : "Create"}
