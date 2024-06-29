@@ -1,68 +1,77 @@
 const Product = require("../models/productModel");
 
 exports.getAllProducts = async (req, res) => {
-  // const page = parseInt(req.query.page) || 1;
-  // const limit = parseInt(req.query.limit) || 10;
-  // const skip = (page - 1) * limit;
   try {
-    // const totalProducts = await Product.countDocuments();
-    const products = await Product.find()
-      .sort({ createdAt: -1 })
-      .populate("category", "name");
-    //   .skip(skip)
-    //   .limit(limit);
-    if (products.length < 1)
-      return res.status(404).json({ message: "No products found" });
+    const daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const currentDay = daysOfWeek[new Date().getDay()];
 
-    return res.status(200).json({
-      message: "Products fetched successfully",
-      data: products,
-      // pagination: {
-      //   totalProducts: totalProducts,
-      //   totalPages: Math.ceil(totalProducts / limit),
-      //   currentPage: page,
-      //   pageProductLimit: limit,
-      // },
-    });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-exports.getProductsByCategory = async (req, res) => {
-  // const page = parseInt(req.query.page) || 1;
-  // const limit = parseInt(req.query.limit) || 10;
-  // const skip = (page - 1) * limit;
-  const categoryId = req.params.id;
-  try {
-    // const totalProducts = await Product.countDocuments({
-    //   category: categoryId,
-    // });
     const products = await Product.find({
-      category: categoryId,
       isavailable: true,
+      quantity: { $gt: 0 },
+      $or: [
+        { weeklyAvailability: { $in: [currentDay] } },
+        {
+          weeklyAvailability: { $in: ["Monday to Sunday"] },
+        },
+      ],
     })
       .sort({ createdAt: -1 })
       .populate("category", "name");
-    // .skip(skip)
-    // .limit(limit);
     if (products.length < 1)
       return res.status(404).json({ message: "No products found" });
 
     return res.status(200).json({
       message: "Products fetched successfully",
       data: products,
-      // pagination: {
-      //   totalProducts: totalProducts,
-      //   totalPages: Math.ceil(totalProducts / limit),
-      //   currentPage: page,
-      //   pageProductLimit: limit,
-      // },
     });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
+
+// exports.getProductsByCategory = async (req, res) => {
+//   // const page = parseInt(req.query.page) || 1;
+//   // const limit = parseInt(req.query.limit) || 10;
+//   // const skip = (page - 1) * limit;
+//   const categoryId = req.params.id;
+//   try {
+//     // const totalProducts = await Product.countDocuments({
+//     //   category: categoryId,
+//     // });
+//     const products = await Product.find({
+//       category: categoryId,
+//       isavailable: true,
+//       quantity: { $gt: 0 },
+//     })
+//       .sort({ createdAt: -1 })
+//       .populate("category", "name");
+//     // .skip(skip)
+//     // .limit(limit);
+//     if (products.length < 1)
+//       return res.status(404).json({ message: "No products found" });
+
+//     return res.status(200).json({
+//       message: "Products fetched successfully",
+//       data: products,
+//       // pagination: {
+//       //   totalProducts: totalProducts,
+//       //   totalPages: Math.ceil(totalProducts / limit),
+//       //   currentPage: page,
+//       //   pageProductLimit: limit,
+//       // },
+//     });
+//   } catch (err) {
+//     return res.status(500).json({ message: err.message });
+//   }
+// };
 
 exports.createProduct = async (req, res) => {
   try {
@@ -141,9 +150,8 @@ exports.deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
     const product = await Product.findByIdAndDelete(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
     return res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     return res.status(500).json({ message: err.message });

@@ -15,6 +15,7 @@ exports.getAllOrders = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
 exports.getOrderById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -83,24 +84,39 @@ exports.createOrder = async (req, res) => {
       totalPrice,
       isPaid,
       paidAt,
+      deliveryDate,
     } = req.body;
+
+    for (const item of orderItems) {
+      const product = await Product.findById(item.product);
+      if (!product)
+        return res
+          .status(404)
+          .json({ message: `Product with ID ${item.product} not found` });
+
+      if (!product.isavailable)
+        return res.status(400).json({
+          message: `${product.name} is not available`,
+        });
+
+      if (product.quantity < item.amount)
+        return res.status(400).json({
+          message: `${product.name} out of stock!! Quantity remaining ${product.quantity} in stock`,
+        });
+    }
 
     detailedOrderItems = await Promise.all(
       orderItems.map(async (item) => {
         const product = await Product.findById(item.product);
-        if (!product)
-          return res
-            .status(404)
-            .json({ message: `Product with ID ${item.product} not found` });
 
         const price = product.price;
         const amount = item.amount;
         const totalPrice = price * amount;
 
-        // product.quanity -= amount;
-        // await product.save();
+        product.quantity -= amount;
+        if (product.quantity === 0) product.isavailable = false;
+        await product.save();
 
-        // orderTotalPrice += totalPrice;
         return {
           product: item.product,
           amount: amount,
@@ -108,6 +124,7 @@ exports.createOrder = async (req, res) => {
         };
       })
     );
+
     if (paymentMethod == "Cash Payment") {
       order = await Order.create({
         user: userId,
@@ -119,6 +136,7 @@ exports.createOrder = async (req, res) => {
         totalPrice,
         isPaid: true,
         paidAt,
+        deliveryDate,
       });
     } else if (paymentMethod == "Pay Later") {
       order = await Order.create({
@@ -131,6 +149,7 @@ exports.createOrder = async (req, res) => {
         totalPrice,
         // isPaid: false,
         paidAt,
+        deliveryDate,
       });
     }
     return res
@@ -143,56 +162,58 @@ exports.createOrder = async (req, res) => {
 
 exports.updateOrder = async (req, res) => {
   const { id } = req.params;
-  let detailedOrderItems = [];
+  // let detailedOrderItems = [];
   // orderTotalPrice = 0;
   try {
     const {
-      orderItems,
+      // orderItems,
       paymentMethod,
       customerInfo,
       status,
       taxPrice,
       isPaid,
+      deliveryDate,
     } = req.body;
     const order = await Order.findById(id);
     if (!order) return res.status(404).json({ message: "Order not found" });
 
-    if (orderItems) {
-      detailedOrderItems = await Promise.all(
-        orderItems.map(async (item) => {
-          const product = await Product.findById(item.product);
-          if (!product)
-            return res
-              .status(404)
-              .json({ message: `Product with ID ${item.product} not found` });
+    // if (orderItems) {
+    //   detailedOrderItems = await Promise.all(
+    //     orderItems.map(async (item) => {
+    //       const product = await Product.findById(item.product);
+    //       if (!product)
+    //         return res
+    //           .status(404)
+    //           .json({ message: `Product with ID ${item.product} not found` });
 
-          const price = product.price;
-          const amount = item.amount;
-          const totalPrice = price * amount;
+    //       const price = product.price;
+    //       const amount = item.amount;
+    //       const totalPrice = price * amount;
 
-          // product.quanity -= amount;
-          // await product.save();
+    //       // product.quanity -= amount;
+    //       // await product.save();
 
-          // orderTotalPrice += totalPrice;
-          return {
-            product: item.product,
-            amount: amount,
-            price: totalPrice,
-          };
-        })
-      );
-    }
+    //       // orderTotalPrice += totalPrice;
+    //       return {
+    //         product: item.product,
+    //         amount: amount,
+    //         price: totalPrice,
+    //       };
+    //     })
+    //   );
+    // }
 
     const updateOrder = await Order.findByIdAndUpdate(
       order._id,
       {
-        orderItems: detailedOrderItems,
+        // orderItems: detailedOrderItems,
         paymentMethod,
         customerInfo,
         taxPrice,
         status,
         // totalPrice: orderTotalPrice,
         isPaid,
+        deliveryDate,
       },
       { new: true }
     );
