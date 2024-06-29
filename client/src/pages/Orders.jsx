@@ -245,8 +245,11 @@ const Orders = () => {
               <tr>
                 <th style={{ cursor: "default" }}>Order ID</th>
                 <th onClick={() => handleSort("createdAt")}>
-                  Date Ordered <FontAwesomeIcon icon={faArrowsUpDown} />
+                  Ordered Date <FontAwesomeIcon icon={faArrowsUpDown} />
                 </th>
+                {/* <th onClick={() => handleSort("createdAt")}>
+                  Delivery Date <FontAwesomeIcon icon={faArrowsUpDown} />
+                </th> */}
                 <th onClick={() => handleSort("customerInfo.name")}>
                   Customer <FontAwesomeIcon icon={faArrowsUpDown} />
                 </th>
@@ -297,15 +300,20 @@ const Orders = () => {
                   <tr key={order._id}>
                     <td>{order._id}</td>
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                    {/* <td>{new Date(order.createdAt).toLocaleDateString()}</td> */}
                     <td>
                       {order.customerInfo ? order.customerInfo.name : "N/A"}
                     </td>
-                    <td style={paymentStyle}>
-                      {order.isPaid ? "Paid" || "Cash Payment" : "Paylater"}
+                    <td>
+                      <span style={paymentStyle}>
+                        {order.isPaid ? "Paid" || "Cash Payment" : "Paylater"}
+                      </span>
                     </td>
-                    <td style={statusStyle}>
-                      {order.status.charAt(0).toUpperCase() +
-                        order.status.slice(1)}
+                    <td>
+                      <span style={statusStyle}>
+                        {order.status.charAt(0).toUpperCase() +
+                          order.status.slice(1)}
+                      </span>
                     </td>
                     <td>${order.totalPrice.toFixed(2)}</td>
                     <td className="action-icons">
@@ -400,9 +408,11 @@ const Orders = () => {
             <p className="p-order">
               Customer: {orderDetails.customerInfo.name}
             </p>
-            <p className="p-order">
-              Phone Number: {orderDetails.customerInfo.phoneNumber}
-            </p>
+            {orderDetails.customerInfo.phoneNumber && (
+              <p className="p-order">
+                Phone Number: {orderDetails.customerInfo.phoneNumber}
+              </p>
+            )}
             <table>
               <thead>
                 <tr>
