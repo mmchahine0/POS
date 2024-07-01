@@ -9,6 +9,7 @@ const ProductsManage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showTax, setTaxPopup] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
+  const [tax, setTax] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -42,6 +43,20 @@ const ProductsManage = () => {
 
   useEffect(() => {
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchTax = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:4000/tax/get");
+        const TaxData = response.data.data;
+        setTax(TaxData[0]);
+        setTaxRate(TaxData[0].taxPrice);
+      } catch (error) {
+        console.error("Error fetching Tax:", error);
+      }
+    };
+    fetchTax();
   }, []);
 
   const fetchProducts = async () => {
@@ -113,6 +128,24 @@ const ProductsManage = () => {
 
   const handleTaxChange = (e) => {
     setTaxRate(e.target.value);
+  };
+
+  const handleCreateOrUpdateTax = async (event) => {
+    event.preventDefault();
+    try {
+      const response = tax
+        ? await axios.put(`http://127.0.0.1:4000/tax/update/${tax._id}`, {
+            taxPrice: taxRate,
+          })
+        : await axios.post("http://127.0.0.1:4000/tax/create", {
+            taxPrice: taxRate,
+          });
+
+      setTax(response.data.data);
+      handleClosePopup();
+    } catch (error) {
+      console.error("Error creating/updating tax:", error);
+    }
   };
 
   const handleCreateOrUpdate = async (event) => {
@@ -410,17 +443,20 @@ const ProductsManage = () => {
       {showTax && (
         <div className="modal">
           <div className="modal-content">
-            <form>
+            <form onSubmit={handleCreateOrUpdateTax}>
               <h2 className="h2-admin">Manage Tax Rate</h2>
-              <label>Current Tax Rate: {taxRate}</label>
+              {tax && <label>Current Tax Rate: {tax.taxPrice}%</label>}
               <input
                 className="input-admin"
                 type="number"
                 value={taxRate}
                 onChange={handleTaxChange}
                 placeholder="Tax rate (%)"
+                required
               />
-              <button className="button-admin">Update Tax Rate</button>
+              <button className="button-admin" type="submit">
+                {tax.taxPrice ? "Update Tax Rate" : "Create Tax Rate"}
+              </button>
               <button
                 className="button-admin"
                 style={{ marginTop: "5px", backgroundColor: "red" }}
@@ -439,8 +475,8 @@ const ProductsManage = () => {
             <span className="close" onClick={handleClosePopup}>
               &times;
             </span>
-            <label>Are you sure you want to Delete {productId} ?</label>
-            <button onClick={handleDelete}>Delete Order</button>
+            <label>Are you sure you want to delete this product?</label>
+            <button onClick={handleDelete}>Delete</button>
             <button
               style={{ color: "white", backgroundColor: "red" }}
               onClick={handleClosePopup}

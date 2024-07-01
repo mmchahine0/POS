@@ -61,6 +61,7 @@ const Invoice = ({
         taxPrice: calculateTotal() * 0.1,
         totalPrice: calculateTotal() * 1.1,
         isPaid: false,
+        deliveryDate: dateTime, // Pass deliveryDate from state
       };
 
       await axios.post("http://127.0.0.1:4000/order/create", orderData);
@@ -93,6 +94,7 @@ const Invoice = ({
         totalPrice: calculateTotal() * 1.1,
         isPaid: true,
         paidAt: new Date(),
+        deliveryDate: new Date(), // For cash payment, deliver instantly
       };
 
       await axios.post("http://127.0.0.1:4000/order/create", orderData);

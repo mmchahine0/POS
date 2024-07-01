@@ -247,9 +247,9 @@ const Orders = () => {
                 <th onClick={() => handleSort("createdAt")}>
                   Ordered Date <FontAwesomeIcon icon={faArrowsUpDown} />
                 </th>
-                {/* <th onClick={() => handleSort("createdAt")}>
+                <th onClick={() => handleSort("createdAt")}>
                   Delivery Date <FontAwesomeIcon icon={faArrowsUpDown} />
-                </th> */}
+                </th>
                 <th onClick={() => handleSort("customerInfo.name")}>
                   Customer <FontAwesomeIcon icon={faArrowsUpDown} />
                 </th>
@@ -300,7 +300,7 @@ const Orders = () => {
                   <tr key={order._id}>
                     <td>{order._id}</td>
                     <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                    {/* <td>{new Date(order.createdAt).toLocaleDateString()}</td> */}
+                    <td>{new Date(order.deliveryDate).toLocaleDateString()}</td>
                     <td>
                       {order.customerInfo ? order.customerInfo.name : "N/A"}
                     </td>
