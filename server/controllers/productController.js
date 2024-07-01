@@ -1,6 +1,8 @@
 const Product = require("../models/productModel");
 
 exports.getAllProducts = async (req, res) => {
+  const { role } = req.query;
+  let products;
   try {
     const daysOfWeek = [
       "Sunday",
@@ -11,20 +13,25 @@ exports.getAllProducts = async (req, res) => {
       "Friday",
       "Saturday",
     ];
-    const currentDay = daysOfWeek[new Date().getDay()];
 
-    const products = await Product.find({
-      isavailable: true,
-      quantity: { $gt: 0 },
-      $or: [
-        { weeklyAvailability: { $in: [currentDay] } },
-        {
-          weeklyAvailability: { $in: ["Monday to Sunday"] },
-        },
-      ],
-    })
-      .sort({ createdAt: -1 })
-      .populate("category", "name");
+    if (role === "admin") {
+      products = await Product.find();
+    } else {
+      const currentDay = daysOfWeek[new Date().getDay()];
+      products = await Product.find({
+        isavailable: true,
+        quantity: { $gt: 0 },
+        $or: [
+          { weeklyAvailability: { $in: [currentDay] } },
+          {
+            weeklyAvailability: { $in: ["Monday to Sunday"] },
+          },
+        ],
+      })
+        .sort({ createdAt: -1 })
+        .populate("category", "name");
+    }
+
     if (products.length < 1)
       return res.status(404).json({ message: "No products found" });
 
