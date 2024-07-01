@@ -7,7 +7,7 @@ exports.login = async (req, res) => {
     if (!username || !req.body.password)
       return res.status(400).json({ message: "All fields are required" });
 
-    const user = await User.findOne({ username, status: false });
+    const user = await User.findOne({ username, status: true });
     if (!user) return res.status(400).json({ message: "User not found" });
 
     const checkPassword = await bcrypt.compare(

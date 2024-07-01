@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/sideBar";
 import TopBar from "../components/topBar";
-import dummyUsers from "../dummyDb/users";
 import axios from "axios";
 import "../styles/Admin.css";
 
 const UsersManage = () => {
-  const [users, setUsers] = useState(dummyUsers);
+  const [users, setUsers] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [img_url, setImgUrl] = useState("");
+  const [role, setRole] = useState("admin");
+  const [status, setStatus] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(9);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -21,10 +21,9 @@ const UsersManage = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:4000/user/getAll");
-        const usersArray = response.data.data;
-        setUsers(usersArray);
+        setUsers(response.data.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching users:", error);
       }
     };
     fetchUsers();
@@ -33,12 +32,14 @@ const UsersManage = () => {
   useEffect(() => {
     if (selectedUser) {
       setUsername(selectedUser.username);
-      setPassword(selectedUser.password);
-      setImgUrl(selectedUser.img_url);
+      setPassword("");
+      setRole(selectedUser.role);
+      setStatus(selectedUser.status);
     } else {
       setUsername("");
       setPassword("");
-      setImgUrl("");
+      setRole("admin");
+      setStatus(false);
     }
   }, [selectedUser]);
 
@@ -52,21 +53,22 @@ const UsersManage = () => {
     setShowPopup(false);
     setShowDeleteConfirmation(false);
   };
+
   const handleShowDeleteConfirmation = (userId) => {
     setUserId(userId);
     setShowDeleteConfirmation(true);
   };
+
   const handleCreateOrUpdate = async (event) => {
     event.preventDefault();
-
     const userData = {
       username,
       password,
-      role: "user", // Assuming 'user' role by default, adjust as needed for your use case.
+      role,
+      status,
     };
 
     if (selectedUser) {
-      // Update user
       try {
         const response = await axios.patch(
           `http://127.0.0.1:4000/user/update/${selectedUser._id}`,
@@ -79,13 +81,10 @@ const UsersManage = () => {
         );
         setUsers(updatedUsers);
         handleClosePopup();
-        alert("User updated successfully");
       } catch (error) {
         console.error("Error updating user:", error);
-        alert(error.response?.data?.message || "Failed to update user");
       }
     } else {
-      // Create user
       try {
         const response = await axios.post(
           "http://127.0.0.1:4000/user/create",
@@ -93,19 +92,16 @@ const UsersManage = () => {
         );
         setUsers([...users, response.data.data]);
         handleClosePopup();
-        alert("User created successfully");
       } catch (error) {
         console.error("Error creating user:", error);
-        alert(error.response?.data?.message || "Failed to create user");
       }
     }
   };
 
   const handleDelete = async () => {
-    const id = userId;
     try {
-      await axios.delete(`http://127.0.0.1:4000/user/delete/${id}`);
-      setUsers(users.filter((user) => user._id !== id));
+      await axios.delete(`http://127.0.0.1:4000/user/delete/${userId}`);
+      setUsers(users.filter((user) => user._id !== userId));
       handleClosePopup();
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -117,7 +113,7 @@ const UsersManage = () => {
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
 
   const pageNumbers = [];
-  for (let i = 1; i <= users.length / usersPerPage; i++) {
+  for (let i = 1; i <= Math.ceil(users.length / usersPerPage); i++) {
     pageNumbers.push(i);
   }
 
@@ -142,25 +138,18 @@ const UsersManage = () => {
               <tr>
                 <th>ID</th>
                 <th>Username</th>
-                <th>Password</th>
-                <th>Image</th>
+                <th>Role</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
+                <tr key={user._id}>
+                  <td>{user._id}</td>
                   <td>{user.username}</td>
-                  <td className="scrollable-cell">{user.password}</td>
-                  <td>
-                    <img
-                      src={user.img_url}
-                      alt={user.username}
-                      width="50"
-                      height="50"
-                    />
-                  </td>
+                  <td>{user.role}</td>
+                  <td>{user.status ? "Active" : "Not Active"}</td>
                   <td>
                     <button
                       className="button-admin"
@@ -220,13 +209,26 @@ const UsersManage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={img_url}
-                onChange={(e) => setImgUrl(e.target.value)}
+              <select
+                className="select-admin"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
                 required
-              />
+              >
+                <option value="admin">Admin</option>
+                <option value="cashier">Cashier</option>
+                <option value="stockManager">Stock Manager</option>
+                <option value="kitchenManager">Kitchen Manager</option>
+              </select>
+              <label>
+                <input
+                  style={{ margin: "0px 10px 15px 5px" }}
+                  type="checkbox"
+                  checked={status}
+                  onChange={(e) => setStatus(e.target.checked)}
+                />
+                Active
+              </label>
               <button className="button-admin" type="submit">
                 {selectedUser ? "Update" : "Create"}
               </button>
@@ -242,14 +244,15 @@ const UsersManage = () => {
           </div>
         </div>
       )}
+
       {showDeleteConfirmation && (
         <div className="popup">
           <div className="popup-content">
             <span className="close" onClick={handleClosePopup}>
               &times;
             </span>
-            <label>Are you sure you want to Delete {userId} ?</label>
-            <button onClick={handleDelete}>Delete Order</button>
+            <label>Are you sure you want to delete user {userId}?</label>
+            <button onClick={handleDelete}>Delete User</button>
             <button
               style={{ color: "white", backgroundColor: "red" }}
               onClick={handleClosePopup}
