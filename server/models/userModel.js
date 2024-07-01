@@ -13,13 +13,13 @@ const userSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "user"],
+      enum: ["admin", "cashier", "stockManager", "kitchenManager"],
       required: true,
     },
-    // img_url: {
-    //   type: String,
-    //   required: true,
-    // },
+    status: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

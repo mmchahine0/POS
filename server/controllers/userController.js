@@ -7,7 +7,7 @@ exports.login = async (req, res) => {
     if (!username || !req.body.password)
       return res.status(400).json({ message: "All fields are required" });
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username, status: false });
     if (!user) return res.status(400).json({ message: "User not found" });
 
     const checkPassword = await bcrypt.compare(
@@ -42,7 +42,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const { username, role } = req.body;
+    const { username, role, status } = req.body;
     if (!username || !req.body.password)
       return res.status(400).json({ message: "All fields are required" });
 
@@ -55,6 +55,7 @@ exports.createUser = async (req, res) => {
       username,
       password: hashedPassword,
       role,
+      status,
     });
 
     const { password, ...others } = newUser._doc;
@@ -67,7 +68,7 @@ exports.createUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, password, role, status } = req.body;
   const { id } = req.params;
   try {
     if (username) {
@@ -88,6 +89,7 @@ exports.updateUser = async (req, res) => {
         username,
         password: hashedPassword,
         role,
+        status,
       },
       { new: true }
     );

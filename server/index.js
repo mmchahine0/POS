@@ -7,6 +7,7 @@ const userRoutes = require("./routes/userRoute");
 const productRoutes = require("./routes/productRoute");
 const categoryRoutes = require("./routes/categoryRoute");
 const orderRoutes = require("./routes/orderRoute");
+const taxRoutes = require("./routes/taxRoute");
 
 DB();
 
@@ -30,3 +31,4 @@ app.use("/user", userRoutes);
 app.use("/product", productRoutes);
 app.use("/category", categoryRoutes);
 app.use("/order", orderRoutes);
+app.use("/tax", taxRoutes);
