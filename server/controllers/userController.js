@@ -71,14 +71,20 @@ exports.updateUser = async (req, res) => {
   const { username, password, role, status } = req.body;
   const { id } = req.params;
   try {
+    if (
+      role &&
+      role !== "admin" &&
+      role !== "cashier" &&
+      role !== "stockManager" &&
+      role !== "kitchenManager"
+    )
+      return res.status(400).json({ message: "Role must be admin" });
+
     if (username) {
       const user = await User.findOne({ username, _id: { $ne: id } });
       if (user)
         return res.status(400).json({ message: "Username must be unique" });
     }
-
-    if (role && role !== "admin" && role !== "user")
-      return res.status(400).json({ message: "Role must be admin or user" });
 
     let hashedPassword;
     if (password) hashedPassword = await bcrypt.hash(password, 10);
